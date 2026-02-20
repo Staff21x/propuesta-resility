@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta Comercial — Resility</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0a1628;
+    --navy2:  #132040;
+    --blue:   #1a56db;
+    --accent: #00b4d8;
+    --bg:     #f8fafc;
+    --bg2:    #f0f4f8;
+    --white:  #ffffff;
+    --text:   #0f172a;
+    --muted:  #475569;
+    --dim:    #94a3b8;
+    --border: #e2e8f0;
+    --green:  #10b981;
+    --gold:   #f59e0b;
+    --red:    #ef4444;
+    --shadow: 0 4px 24px rgba(10,22,40,0.08);
+    --shadow-lg: 0 8px 40px rgba(10,22,40,0.12);
+    --font: 'Plus Jakarta Sans', sans-serif;
+    --font-display: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-weight: 400;
+    line-height: 1.7;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page { max-width: 960px; margin: 0 auto; }
+
+  /* ═══ COVER ═══ */
+  .cover {
+    min-height: 100vh;
+    background: linear-gradient(145deg, #0a1628 0%, #0d1f3c 55%, #102040 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 56px 64px;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(26,86,219,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative; z-index: 2;
+  }
+
+  .cover-logo {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cover-logo img { height: 28px; filter: brightness(0) invert(1); }
+
+  .cover-logo-fallback {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  .cover-logo-fallback span { color: var(--accent); }
+
+  .cover-tag {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 5px 12px;
+    border-radius: 4px;
+  }
+
+  .cover-body {
+    position: relative; z-index: 2;
+    max-width: 720px;
+  }
+
+  .cover-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 28px;
+    font-weight: 600;
+  }
+
+  .cover-eyebrow::before {
+    content: '';
+    width: 28px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .cover-title {
+    font-family: var(--font-display);
+    font-size: 62px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  .cover-title .accent { color: var(--accent); }
+
+  .cover-subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.65;
+    max-width: 520px;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .cover-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .pill.primary { background: var(--blue); color: #fff; }
+  .pill.outline { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  .cover-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative; z-index: 2;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 32px;
+  }
+
+  .cover-footer-left { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+  .cover-footer-left strong { display: block; font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 2px; }
+
+  .cover-stats { display: flex; gap: 40px; }
+
+  .cs { text-align: right; }
+  .cs-num { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
+  .cs-num span { color: var(--accent); }
+  .cs-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-top: 4px; }
+
+  /* ═══ SECTIONS ═══ */
+  section {
+    background: var(--white);
+    padding: 64px;
+    margin-bottom: 3px;
+  }
+
+  section:nth-child(even) { background: var(--bg2); }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+
+  .section-label::before { content: ''; width: 18px; height: 2px; background: var(--blue); border-radius: 2px; }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  p { font-size: 15px; color: var(--muted); margin-bottom: 14px; max-width: 720px; line-height: 1.75; }
+  p strong { color: var(--text); font-weight: 600; }
+
+  /* ═══ DIAG CARDS ═══ */
+  .diag-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 36px; }
+
+  .diag-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .diag-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .diag-card.problem::after { background: var(--red); }
+  .diag-card.strength::after { background: var(--green); }
+  .diag-card.opportunity::after { background: var(--gold); }
+
+  .diag-icon { font-size: 22px; margin-bottom: 12px; display: block; }
+  .diag-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .diag-text { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0; max-width: 100%; }
+
+  /* ═══ TIMELINE ═══ */
+  .timeline {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-left: 24px;
+    border-left: 2px solid #dde5ef;
+  }
+
+  .timeline-item { position: relative; }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -31px; top: 24px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 0 4px rgba(26,86,219,0.12);
+  }
+
+  .timeline-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: var(--shadow);
+  }
+
+  .timeline-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+
+  .month-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: rgba(26,86,219,0.07);
+    border: 1px solid rgba(26,86,219,0.15);
+    padding: 5px 14px;
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .timeline-card h3 { font-family: var(--font-display); font-size: 19px; font-weight: 700; color: var(--navy); margin: 0; }
+  .timeline-card > p { font-size: 14px; margin-bottom: 0; }
+
+  .action-list { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+
+  .action-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .action-list li::before { content: '→'; color: var(--blue); flex-shrink: 0; font-size: 12px; margin-top: 2px; font-weight: 700; }
+
+  .result-highlight {
+    margin-top: 18px;
+    padding: 12px 18px;
+    background: rgba(16,185,129,0.06);
+    border-left: 3px solid var(--green);
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: #065f46;
+    font-weight: 600;
+  }
+
+  /* ═══ TARGETS ═══ */
+  .target-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+
+  .target-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+    box-shadow: var(--shadow);
+  }
+
+  .target-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+  .target-name { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .target-desc { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; max-width: 100%; }
+
+  .target-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(26,86,219,0.06);
+    border: 1px solid rgba(26,86,219,0.12);
+    color: var(--blue);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  /* ═══ WORKERS ═══ */
+  .workers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+
+  .worker-card {
+    border-radius: 12px;
+    padding: 26px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    box-shadow: var(--shadow);
+  }
+
+  .worker-card.confirmed { background: var(--white); border: 1.5px solid rgba(26,86,219,0.2); }
+  .worker-card.pending { background: #fffbeb; border: 1.5px dashed rgba(245,158,11,0.35); }
+
+  .worker-icon {
+    font-size: 22px;
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .worker-card.confirmed .worker-icon { background: rgba(26,86,219,0.07); }
+  .worker-card.pending .worker-icon { background: rgba(245,158,11,0.1); }
+
+  .worker-name { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .worker-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0; max-width: 100%; }
+  .worker-status { margin-top: 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+  .worker-card.confirmed .worker-status { color: var(--blue); }
+  .worker-card.pending .worker-status { color: var(--gold); }
+
+  /* ═══ ECONOMY ═══ */
+  .economy-box {
+    margin-top: 28px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 36px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  .economy-left h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .economy-left p { font-size: 13.5px; margin: 0; }
+
+  .economy-right { display: flex; flex-direction: column; gap: 12px; }
+
+  .econ-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .econ-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .econ-label { font-size: 13px; color: var(--muted); }
+  .econ-value { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .econ-value.blue { color: var(--blue); }
+  .econ-value.green { color: var(--green); }
+  .econ-value.gold { color: var(--gold); }
+
+  /* ═══ REQUIREMENTS ═══ */
+  .req-list { display: flex; flex-direction: column; gap: 10px; margin-top: 32px; }
+
+  .req-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 22px;
+    box-shadow: var(--shadow);
+  }
+
+  .req-icon {
+    font-size: 20px;
+    width: 44px; height: 44px;
+    background: rgba(26,86,219,0.06);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .req-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .req-text span { font-size: 12.5px; color: var(--dim); }
+
+  /* ═══ CLOSING ═══ */
+  .closing { background: var(--navy); padding: 72px 64px; page-break-inside: avoid; }
+
+  .closing .section-label { color: var(--accent); }
+  .closing .section-label::before { background: var(--accent); }
+  .closing .section-title { color: #fff; }
+
+  .closing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 40px; align-items: start; }
+
+  .next-steps { display: flex; flex-direction: column; gap: 20px; }
+
+  .step-item { display: flex; gap: 18px; align-items: flex-start; }
+
+  .step-num { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--accent); opacity: 0.35; line-height: 1; flex-shrink: 0; width: 32px; }
+
+  .step-text strong { display: block; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 3px; }
+  .step-text span { font-size: 13px; color: rgba(255,255,255,0.42); line-height: 1.55; }
+
+  .closing-quote {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 32px;
+  }
+
+  .quote-mark { font-family: var(--font-display); font-size: 56px; color: var(--accent); opacity: 0.25; line-height: 0.8; display: block; margin-bottom: 14px; }
+  .quote-text { font-size: 15px; color: rgba(255,255,255,0.72); line-height: 1.75; font-style: italic; margin-bottom: 20px; max-width: 100%; }
+  .quote-author { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+
+  /* ═══ METRICS ═══ */
+  .metrics-row {
+    display: flex;
+    gap: 0;
+    margin-top: 48px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .metric-item {
+    flex: 1;
+    padding: 28px 20px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .metric-item:last-child { border-right: none; }
+
+  .metric-num { font-family: var(--font-display); font-size: 38px; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 8px; }
+  .metric-num span { color: var(--accent); }
+  .metric-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.32); line-height: 1.5; }
+
+  /* ═══ FOOTER ═══ */
+  footer {
+    background: #060f1e;
+    padding: 24px 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  footer .f-brand { font-weight: 700; font-size: 13px; color: rgba(255,255,255,0.45); }
+  footer .f-brand span { color: var(--accent); }
+  footer .f-center { font-size: 11px; color: rgba(255,255,255,0.18); letter-spacing: 0.1em; text-transform: uppercase; }
+  footer .f-date { font-size: 11px; color: rgba(255,255,255,0.25); }
+
+  @media print {
+    .cover { page-break-after: always; }
+    section, .closing { page-break-inside: avoid; }
+  }
+
+  @page { size: A4; margin: 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══════════ COVER ═══════════ -->
+  <div class="cover">
+    <div class="cover-header">
+      <div class="cover-logo">
+        <div class="cover-logo-fallback">Re<span>sility</span></div>
+      </div>
+      <div class="cover-tag">Confidencial · Febrero 2025</div>
+    </div>
+
+    <div class="cover-body">
+      <div class="cover-eyebrow">Propuesta Comercial</div>
+      <div class="cover-title">
+        Transformación<br>
+        <span class="accent">Comercial</span><br>
+        Resility
+      </div>
+      <div class="cover-subtitle">
+        De la dependencia de referidos a un motor de ventas con estructura, automatización y dirección comercial activa.
+      </div>
+      <div class="cover-pills">
+        <div class="pill primary"><span class="dot"></span> 3 meses · Resultados concretos</div>
+        <div class="pill outline">Dirección comercial externa</div>
+        <div class="pill outline">Trabajador Digital instalado</div>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <div class="cover-footer-left">
+        Preparado para
+        <strong>Patricio Campos · Resility</strong>
+        resility.io
+      </div>
+      <div class="cover-stats">
+        <div class="cs">
+          <div class="cs-num">3<span>m</span></div>
+          <div class="cs-label">Plazo resultados</div>
+        </div>
+        <div class="cs">
+          <div class="cs-num">6<span>+</span></div>
+          <div class="cs-label">Canales activos</div>
+        </div>
+        <div class="cs">
+          <div class="cs-num">10<span>c</span></div>
+          <div class="cs-label">Clientes a activar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 01 DIAGNÓSTICO ═══════════ -->
+  <section>
+    <div class="section-label">01 — Diagnóstico</div>
+    <h2 class="section-title">Lo que veo en Resility hoy</h2>
+    <p>Veo una empresa con un producto sólido, clientes grandes y una operación madura. El problema no está en el servicio: <strong>está en la ausencia de un sistema de ventas</strong> que funcione sin depender de ti y sin agotar tus redes de referidos.</p>
+    <p>Este es el límite natural al que llegan todas las pymes cuando el crecimiento orgánico se detiene. Lo he visto muchas veces. La solución no es publicidad ni vendedores mal pagados: es construir la estructura que nunca se construyó.</p>
+    <div class="diag-grid">
+      <div class="diag-card problem">
+        <span class="diag-icon">🔴</span>
+        <div class="diag-title">Red de referidos agotada</div>
+        <p class="diag-text">5–7 años de crecimiento orgánico consumieron el capital de contactos. Hoy no llegan nuevas oportunidades de forma espontánea.</p>
+      </div>
+      <div class="diag-card problem">
+        <span class="diag-icon">🔴</span>
+        <div class="diag-title">Sin estructura comercial</div>
+        <p class="diag-text">No existe proceso de prospección, CRM ni seguimiento. Las ventas han dependido 100% del dueño.</p>
+      </div>
+      <div class="diag-card problem">
+        <span class="diag-icon">🔴</span>
+        <div class="diag-title">Intentos sin sistema</div>
+        <p class="diag-text">Sin proceso ni modelo claro, los vendedores anteriores no pudieron funcionar. El problema nunca fueron las personas.</p>
+      </div>
+      <div class="diag-card strength">
+        <span class="diag-icon">🟢</span>
+        <div class="diag-title">Producto probado</div>
+        <p class="diag-text">10 clientes grandes activos y canales de subcontratación validan que el servicio funciona y tiene mercado real.</p>
+      </div>
+      <div class="diag-card strength">
+        <span class="diag-icon">🟢</span>
+        <div class="diag-title">Referente con presencia en medios</div>
+        <p class="diag-text">Apariciones en diarios, radio y TV generan confianza. Ese capital de marca no se está aprovechando comercialmente.</p>
+      </div>
+      <div class="diag-card opportunity">
+        <span class="diag-icon">🟡</span>
+        <div class="diag-title">Mercado con demanda activa</div>
+        <p class="diag-text">Fintech, banca, salud y pymes con necesidades reales de ciberseguridad. El mercado está disponible. Solo falta el canal.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 02 PLAN ═══════════ -->
+  <section>
+    <div class="section-label">02 — El Plan</div>
+    <h2 class="section-title">Lo que voy a hacer en 3 meses</h2>
+    <p>Me hago cargo de la <strong>dirección comercial completa</strong> de Resility: prospección, automatización, clientes actuales, web, email marketing y campañas outbound. Todo corre en paralelo desde el primer día, sin meses de análisis previo.</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div class="timeline-card-header">
+            <span class="month-badge">Mes 1</span>
+            <h3>Estructura + Automatización + Base</h3>
+          </div>
+          <p>Las primeras dos semanas las dedico a diseño y configuración. Las segundas dos, a instalación y activación. Al cierre del mes tenemos todos los canales corriendo.</p>
+          <ul class="action-list">
+            <li>Levanto y segmento la base de datos de prospectos que me proporcionas</li>
+            <li>Tomo control del LinkedIn de Resility: optimizo el perfil y defino la estrategia de contenido</li>
+            <li>Instalo el Trabajador Digital: prospección LinkedIn, seguimiento WhatsApp y correo</li>
+            <li>Diseño y activo campañas de Email Marketing conectadas al Trabajador Digital</li>
+            <li>Reviso el sitio web: diagnóstico y propuesta de cambios a la agencia</li>
+            <li>Diseño el pitch comercial por segmento: fintech, banca, salud, pymes</li>
+          </ul>
+          <div class="result-highlight">✦ Entregable: maquinaria de prospección activa, LinkedIn operativo y Email Marketing corriendo al día 30</div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div class="timeline-card-header">
+            <span class="month-badge">Mes 2</span>
+            <h3>Outbound + Reuniones + Clientes Actuales</h3>
+          </div>
+          <p>Con todos los canales activos, divido el foco en dos frentes: <strong>generar nuevas oportunidades</strong> y <strong>activar el potencial no explotado en tus 10 clientes actuales</strong>.</p>
+          <ul class="action-list">
+            <li>Lanzo campañas outbound segmentadas por industria y cargo</li>
+            <li>Gestiono respuestas, califico prospectos y agendo reuniones presenciales y virtuales</li>
+            <li>Acompaño personalmente las reuniones comerciales estratégicas</li>
+            <li>Levanto el estado de relación con cada cliente actual</li>
+            <li>Identifico y activo oportunidades de cross selling por cuenta</li>
+            <li>Coordino con la agencia web la implementación de los cambios propuestos en Mes 1</li>
+          </ul>
+          <div class="result-highlight">✦ Entregable: agenda activa de reuniones nuevas + mapa de cross selling por cliente</div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-card">
+          <div class="timeline-card-header">
+            <span class="month-badge">Mes 3</span>
+            <h3>Primeros Cierres + Expansión Regional</h3>
+          </div>
+          <p>Concreto las primeras oportunidades generadas, activo cross selling en clientes actuales y dejo el modelo listo para escalar.</p>
+          <ul class="action-list">
+            <li>Cierro las primeras oportunidades generadas por outbound y email marketing</li>
+            <li>Activo servicios adicionales en clientes actuales (cross selling)</li>
+            <li>Optimizo campañas basándome en datos reales de los 2 meses anteriores</li>
+            <li>Activo la estrategia de posicionamiento: entrevistas, medios y tu LinkedIn</li>
+            <li>Diseño el modelo de expansión regional: Perú, Argentina, Colombia</li>
+            <li>Evaluamos continuidad, compensación y segunda etapa</li>
+          </ul>
+          <div class="result-highlight">✦ Entregable: primeros cierres nuevos + cross selling activado + modelo regional diseñado</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ PROCESO DE VENTA ═══════════ -->
+  <section>
+    <div class="section-label">03 — Proceso Comercial</div>
+    <h2 class="section-title">Cómo veo el ciclo de venta</h2>
+    <p>Cada oportunidad recorre un proceso claro con roles definidos. Nadie improvisa, nadie se pisa. El Agente abre la puerta, yo conduzco el negocio y tú cierras la parte técnica.</p>
+
+    <div style="margin-top: 36px; display: flex; flex-direction: column; gap: 0;">
+
+      <!-- Step 1 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">1</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Prospección</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Identificación y primer contacto automatizado con prospectos calificados del segmento objetivo.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(0,180,216,0.08); border: 1px solid rgba(0,180,216,0.2); color: var(--accent); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">🤖 Agente</span>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">2</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Detección de necesidad</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Conversación inicial para entender el problema real del prospecto, calificar la oportunidad y decidir si avanza.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(0,180,216,0.08); border: 1px solid rgba(0,180,216,0.2); color: var(--accent); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">🤖 Agente</span>
+          <span style="font-size: 11px; font-weight: 700; background: rgba(26,86,219,0.08); border: 1px solid rgba(26,86,219,0.2); color: var(--blue); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Walter</span>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">3</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Reunión técnica</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Presentación técnica del servicio. Se profundiza en la solución, se responden preguntas específicas y se genera confianza técnica.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(26,86,219,0.08); border: 1px solid rgba(26,86,219,0.2); color: var(--blue); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Walter</span>
+          <span style="font-size: 11px; font-weight: 700; background: rgba(10,22,40,0.07); border: 1px solid rgba(10,22,40,0.15); color: var(--navy); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Patricio</span>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">4</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Levantamiento técnico y diseño de solución</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Patricio y su equipo analizan el entorno del cliente, definen la arquitectura de la solución, los alcances técnicos y cómo se va a implementar. Es el dominio del área técnica — sin intervención comercial.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(10,22,40,0.07); border: 1px solid rgba(10,22,40,0.15); color: var(--navy); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Patricio</span>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">5</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Reunión de cotización</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Presentación de la propuesta al cliente. Negociación, manejo de objeciones y alineación de expectativas.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(26,86,219,0.08); border: 1px solid rgba(26,86,219,0.2); color: var(--blue); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Walter</span>
+          <span style="font-size: 11px; font-weight: 700; background: rgba(10,22,40,0.07); border: 1px solid rgba(10,22,40,0.15); color: var(--navy); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Patricio</span>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">6</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Seguimiento</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Contacto continuo con el prospecto hasta que tome decisión. El agente automatiza, Walter interviene cuando el momento lo requiere.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(26,86,219,0.08); border: 1px solid rgba(26,86,219,0.2); color: var(--blue); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Walter</span>
+          <span style="font-size: 11px; font-weight: 700; background: rgba(0,180,216,0.08); border: 1px solid rgba(0,180,216,0.2); color: var(--accent); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">🤖 Agente</span>
+        </div>
+      </div>
+
+      <!-- Step 7 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">7</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Ajustes técnico-comerciales</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Refinamiento de la propuesta según el feedback del cliente. Técnico y comercial alineados antes del cierre.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(10,22,40,0.07); border: 1px solid rgba(10,22,40,0.15); color: var(--navy); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Patricio</span>
+          <span style="font-size: 11px; font-weight: 700; background: rgba(26,86,219,0.08); border: 1px solid rgba(26,86,219,0.2); color: var(--blue); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Walter</span>
+        </div>
+      </div>
+
+      <!-- Step 8 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--green); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">8</div>
+          <div style="width: 2px; flex: 1; background: var(--border); margin-top: 4px;"></div>
+        </div>
+        <div style="padding: 0 0 24px 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Cierre y relación post venta</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">El cierre no es un momento — es un proceso. Incluye todas las reuniones necesarias para mantener el lead vivo, estar presente, poner la cara y sostener la relación hasta que el cliente tome la decisión. Una vez dentro, Walter mantiene el vínculo comercial: seguimiento activo, presencia periódica y construcción de la relación que genera cross selling y nuevas oportunidades.</div>
+        </div>
+        <div style="padding: 0 0 24px 0; display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: var(--green); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Walter</span>
+        </div>
+      </div>
+
+      <!-- Step 9 -->
+      <div style="display: grid; grid-template-columns: 32px 1fr 180px; gap: 0 20px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; font-family: var(--font-display); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">9</div>
+        </div>
+        <div style="padding: 0 0 0 0;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">Implementación y adelante</div>
+          <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Onboarding técnico del cliente y ejecución del servicio. El área comercial queda disponible para la siguiente oportunidad.</div>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: flex-start; flex-wrap: wrap;">
+          <span style="font-size: 11px; font-weight: 700; background: rgba(10,22,40,0.07); border: 1px solid rgba(10,22,40,0.15); color: var(--navy); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Patricio</span>
+          <span style="font-size: 11px; font-weight: 700; background: rgba(10,22,40,0.07); border: 1px solid rgba(10,22,40,0.15); color: var(--navy); padding: 4px 10px; border-radius: 100px; white-space: nowrap;">Equipo técnico</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Legend -->
+    <div style="margin-top: 32px; padding: 16px 24px; background: var(--bg2); border-radius: 10px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+      <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);">Referencias</div>
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted);">
+        <span style="font-size: 11px; font-weight: 700; background: rgba(0,180,216,0.08); border: 1px solid rgba(0,180,216,0.2); color: var(--accent); padding: 3px 10px; border-radius: 100px;">🤖 Agente</span>
+        Trabajador Digital automatizado
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted);">
+        <span style="font-size: 11px; font-weight: 700; background: rgba(26,86,219,0.08); border: 1px solid rgba(26,86,219,0.2); color: var(--blue); padding: 3px 10px; border-radius: 100px;">Walter</span>
+        Socio comercial
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted);">
+        <span style="font-size: 11px; font-weight: 700; background: rgba(10,22,40,0.07); border: 1px solid rgba(10,22,40,0.15); color: var(--navy); padding: 3px 10px; border-radius: 100px;">Patricio</span>
+        Socio técnico
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════ 04 MERCADOS ═══════════ -->
+  <section>
+    <div class="section-label">04 — Mercados Objetivo</div>
+    <h2 class="section-title">A quién voy a vender</h2>
+    <p>Propongo trabajar con un <strong>pareto 80/20</strong>: volumen en pymes, rentabilidad en cuentas grandes. En paralelo, aprovecho tus apariciones en medios para convertirlas en un canal activo de generación de confianza y oportunidades.</p>
+
+    <div class="target-grid">
+      <div class="target-card">
+        <div class="target-label">Segmento primario · Chile</div>
+        <div class="target-name">Pymes con datos críticos</div>
+        <p class="target-desc">Empresas medianas con activos digitales sensibles sin solución de ciberseguridad instalada. Ciclo de decisión más corto y alto volumen de contactos.</p>
+        <div class="target-tags"><span class="tag">80% del volumen</span><span class="tag">Ciclo corto</span><span class="tag">BDD disponible</span></div>
+      </div>
+      <div class="target-card">
+        <div class="target-label">Segmento prioritario · Chile</div>
+        <div class="target-name">Fintech, Banca y Salud</div>
+        <p class="target-desc">Empresas con regulación activa y alta exposición de riesgo. Buscan proveedores especializados con trayectoria. Resility califica directamente.</p>
+        <div class="target-tags"><span class="tag">20% del volumen</span><span class="tag">Alta rentabilidad</span><span class="tag">Contratos largos</span></div>
+      </div>
+      <div class="target-card">
+        <div class="target-label">Expansión · Segunda etapa</div>
+        <div class="target-name">Perú · Argentina · Colombia</div>
+        <p class="target-desc">Mercados con demanda creciente de ciberseguridad y menor competencia que Chile. Modelo de venta directa replicando el proceso instalado en Mes 1.</p>
+        <div class="target-tags"><span class="tag">Venta directa</span><span class="tag">Modelo replicable</span><span class="tag">Mes 3</span></div>
+      </div>
+      <div class="target-card">
+        <div class="target-label">Canal complementario</div>
+        <div class="target-name">Medios + Posicionamiento</div>
+        <p class="target-desc">Las apariciones de Patricio en prensa, radio y TV se convierten en contenido de autoridad. Su LinkedIn pasa a ser canal activo de generación de oportunidades.</p>
+        <div class="target-tags"><span class="tag">Referente</span><span class="tag">Confianza</span><span class="tag">Inbound</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 04 AUTOMATIZACIÓN ═══════════ -->
+  <section>
+    <div class="section-label">05 — Automatización</div>
+    <h2 class="section-title">Los Trabajadores Digitales que instalo</h2>
+    <p>Los Trabajadores Digitales reemplazan tareas manuales repetitivas con flujos automatizados de comportamiento humano. Los instalo yo, los dejo funcionando en tu empresa y liberan al equipo para lo que requiere criterio: negociar y cerrar.</p>
+
+    <div class="workers-grid">
+      <div class="worker-card confirmed">
+        <div class="worker-icon">🤖</div>
+        <div class="worker-info">
+          <div class="worker-name">Trabajador Digital — Prospección Comercial</div>
+          <p class="worker-desc">Gestiona el ciclo completo de prospección: identifica contactos en LinkedIn, hace seguimiento por WhatsApp y correo, registra cada interacción en el CRM y escala al canal humano cuando hay señal de interés real.</p>
+          <div class="worker-status">✦ Incluido · Se instala en Mes 1</div>
+        </div>
+      </div>
+
+      <div class="worker-card pending">
+        <div class="worker-icon">🔔</div>
+        <div class="worker-info">
+          <div class="worker-name">Trabajador Digital — Alertas de Contingencia</div>
+          <p class="worker-desc">Hoy la gestión de alertas ante incidentes se hace de forma manual. Este trabajador automatiza la detección, clasificación y notificación de contingencias, liberando al equipo técnico para la resolución.</p>
+          <div class="worker-status">◎ En evaluación · Segunda etapa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APORTE DE SOCIO -->
+    <div style="margin-top: 28px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow);">
+
+      <div style="background: var(--navy); padding: 24px 36px;">
+        <div style="font-family: var(--font-display); font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px;">Lo que pongo sobre la mesa desde el día uno</div>
+        <div style="font-size: 13px; color: rgba(255,255,255,0.45);">Capital no monetario que queda instalado en Resility — no es un servicio, es mi aporte</div>
+      </div>
+
+      <div style="padding: 0 36px;">
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; gap: 0; padding: 14px 0; border-bottom: 2px solid var(--border);">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);">Activo que queda en Resility</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); text-align: center;">Valor de mercado</div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); text-align: center;">Costo para Resility</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Trabajador Digital instalado y configurado</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Prospección LinkedIn, WhatsApp, correo y CRM automatizados</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">$1.500.000 / mes</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Arquitectura de prompts e investigación</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">150+ horas de diseño, programación, prueba y optimización del sistema</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">$4.500.000</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Maqueta y diseño del proceso comercial</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Estructura, pitch por segmento y flujos de venta</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">$600.000</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Management comercial activo</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Dirección del área comercial, priorización, ritmo de ejecución y toma de decisiones</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">$3.500.000</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Estrategia de negocio y diseño del modelo</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Posicionamiento, segmentación, propuesta de valor, expansión regional y estructura de sociedad</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">$2.500.000</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Face to Customers — representación comercial</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Reuniones, negociaciones y cierre con clientes. La cara comercial de Resility frente al mercado</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">$2.000.000</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Diseño e implementación de procesos internos</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">Ingeniería de venta, flujos operativos, limpieza de vicios y optimización de la operación</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">$1.800.000</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 14px 0; border-bottom: 1px solid var(--border); align-items: center;">
+          <div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text);">Red de contactos y ecosistema comercial</div>
+            <div style="font-size: 12px; color: var(--dim); margin-top: 2px;">25 años de relaciones en tecnología, marketing y negocios B2B en Chile y región</div>
+          </div>
+          <div style="text-align: center; font-size: 14px; font-weight: 600; color: var(--muted);">Incalculable</div>
+          <div style="text-align: center; font-size: 14px; font-weight: 700; color: var(--green);">$0</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 160px 160px; padding: 20px 0; align-items: center; background: rgba(16,185,129,0.04); margin: 0 -36px; padding-left: 36px; padding-right: 36px;">
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--navy);">VALOR TOTAL APORTADO</div>
+          <div style="text-align: center; font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--muted);">$17.400.000+</div>
+          <div style="text-align: center; font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--green);">$0</div>
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(90deg, rgba(26,86,219,0.06), rgba(26,86,219,0.02)); border-top: 2px solid var(--blue); padding: 20px 36px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 4px;">Todo esto queda instalado en Resility como activo permanente.</div>
+        <div style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">No te cobro nada por esto. Es lo que pongo sobre la mesa porque el crecimiento de Resility es el motor que impulsa mi propio negocio, Staff21x.</div>
+        <div style="font-size: 13px; color: var(--muted);">A medida que los resultados lo justifiquen, consolido este rol de forma permanente y lanzamos Staff21x como segunda unidad de negocio. La conversación sobre compensación la construimos sobre resultados reales — no sobre promesas.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════ 06 STAFF21X ═══════════ -->
+  <section>
+    <div class="section-label">07 — Visión de largo plazo</div>
+    <h2 class="section-title">Staff21x · Mi negocio que crece en paralelo</h2>
+    <p>No vengo a quedarme dentro de Resility. Vengo a construir algo más grande desde afuera. <strong>Staff21x</strong> es mi negocio — una plataforma de Trabajadores Digitales que necesita su primer caso de éxito real para posicionarse en el mercado.</p>
+    <p>Resility es ese caso. Mientras activo tu canal comercial con el Trabajador Digital instalado, posiciono Staff21x con resultados concretos y empiezo a generar su propio flujo de clientes. Los dos negocios se potencian sin mezclarse: cada uno tiene su identidad, su mercado y su estructura.</p>
+
+    <!-- Model cards -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 32px;">
+
+      <div style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); border-top: 3px solid var(--blue);">
+        <div style="font-size: 24px; margin-bottom: 12px;">🏢</div>
+        <div style="font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">Resility crece</div>
+        <p style="font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6;">Activo tu canal comercial, genero clientes nuevos y reactivo los 10 existentes. Por primera vez tendrás una estructura de ventas que funciona sin depender de ti.</p>
+      </div>
+
+      <div style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); border-top: 3px solid var(--accent);">
+        <div style="font-size: 24px; margin-bottom: 12px;">🚀</div>
+        <div style="font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">Posiciono Staff21x</div>
+        <p style="font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6;">Con el Trabajador Digital funcionando en Resility tengo mi primer caso real. Eso es lo que necesito para salir al mercado con credibilidad y empezar a escalar.</p>
+      </div>
+
+      <div style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow); border-top: 3px solid var(--green);">
+        <div style="font-size: 24px; margin-bottom: 12px;">💰</div>
+        <div style="font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">Los negocios de Staff21x facturan por Resility</div>
+        <p style="font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6;">En la etapa inicial, los negocios que genero con Staff21x los facturamos a través de Resility. Simple, limpio y sin fricción operativa desde el arranque.</p>
+      </div>
+
+    </div>
+
+    <!-- Roles -->
+    <div style="margin-top: 20px; background: var(--navy); border-radius: 12px; padding: 32px 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+
+      <div>
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px;">Cómo lo veo</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="color: var(--accent); font-size: 13px; flex-shrink: 0; margin-top: 2px;">→</div>
+            <div style="font-size: 13.5px; color: rgba(255,255,255,0.7);">Dirijo el área comercial de Resility desde afuera, con mentalidad de dueño</div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="color: var(--accent); font-size: 13px; flex-shrink: 0; margin-top: 2px;">→</div>
+            <div style="font-size: 13.5px; color: rgba(255,255,255,0.7);">Posiciono Staff21x usando el caso real de Resility</div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="color: var(--accent); font-size: 13px; flex-shrink: 0; margin-top: 2px;">→</div>
+            <div style="font-size: 13.5px; color: rgba(255,255,255,0.7);">Genero y cierro negocios propios de Staff21x en paralelo</div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="color: var(--accent); font-size: 13px; flex-shrink: 0; margin-top: 2px;">→</div>
+            <div style="font-size: 13.5px; color: rgba(255,255,255,0.7);">Soy owner de cada proyecto que pongo en marcha</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px;">Responsabilidades del período</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="color: var(--green); font-size: 13px; flex-shrink: 0; margin-top: 2px;">✦</div>
+            <div style="font-size: 13.5px; color: rgba(255,255,255,0.7);"><strong style="color: #fff;">Resility:</strong> Comenzar a vender — nuevos clientes y cross selling activo en los 10 existentes</div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="color: var(--green); font-size: 13px; flex-shrink: 0; margin-top: 2px;">✦</div>
+            <div style="font-size: 13.5px; color: rgba(255,255,255,0.7);"><strong style="color: #fff;">Staff21x:</strong> Posicionarse con el primer caso real y empezar a generar su propio flujo de clientes</div>
+          </div>
+          <div style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="color: var(--green); font-size: 13px; flex-shrink: 0; margin-top: 2px;">✦</div>
+            <div style="font-size: 13.5px; color: rgba(255,255,255,0.7);">Al mes 3: evaluar continuidad, estructura de compensación y expansión regional</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Staff website ref -->
+    <div style="margin-top: 14px; background: rgba(26,86,219,0.04); border: 1px solid rgba(26,86,219,0.12); border-radius: 10px; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="font-size: 14px; color: var(--muted);">Plataforma de Trabajadores Digitales</div>
+      <div style="font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--blue);">www.staff21x.com</div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 07 REQUERIMIENTOS ═══════════ -->
+  <section>
+    <div class="section-label">08 — Forma de trabajo</div>
+    <h2 class="section-title">Cómo lo veo día a día</h2>
+
+    <p>No me interesa entrar a Resility como empleado. Opero desde afuera con mentalidad de dueño — tomo decisiones, diseño estrategia y conduzco el negocio comercial como si fuera mío, porque mi propio negocio <strong>Staff21x</strong> crece en la misma medida que Resility crece. Tu éxito es mi primer caso de éxito.</p>
+    <p>No hay jefes ni subordinados entre nosotros. No hay informes ni rendición de cuentas verticales. Somos dos personas con roles distintos y complementarios que discutimos, nos alineamos y ejecutamos. Los puntos se defienden, las estrategias se construyen en la conversación y las decisiones las tomamos juntos.</p>
+
+    <!-- Partner model -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px;">
+
+      <div style="background: rgba(26,86,219,0.04); border: 1.5px solid rgba(26,86,219,0.15); border-radius: 12px; padding: 28px;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px;">Patricio Campos</div>
+        <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 14px;">Columna técnica y operacional</div>
+        <div style="display: flex; flex-direction: column; gap: 9px;">
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--blue); flex-shrink:0;">→</span>Dominio del producto y la operación</div>
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--blue); flex-shrink:0;">→</span>Relación con clientes técnicos</div>
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--blue); flex-shrink:0;">→</span>Posicionamiento como referente del sector</div>
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--blue); flex-shrink:0;">→</span>Visión estratégica de producto</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(0,180,216,0.04); border: 1.5px solid rgba(0,180,216,0.2); border-radius: 12px; padding: 28px;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px;">Yo · Dirección Comercial</div>
+        <div style="font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 14px;">Columna comercial — mentalidad de dueño</div>
+        <div style="display: flex; flex-direction: column; gap: 9px;">
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--accent); flex-shrink:0;">→</span>Diseño y conduzco la estrategia comercial</div>
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--accent); flex-shrink:0;">→</span>Tomo decisiones con visión de dueño</div>
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--accent); flex-shrink:0;">→</span>Negocio y cierro los negocios</div>
+          <div style="display: flex; gap: 10px; font-size: 13.5px; color: var(--muted);"><span style="color: var(--accent); flex-shrink:0;">→</span>Soy owner de los proyectos de Staff21x</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- How we work day to day -->
+    <div style="margin-top: 16px; background: var(--navy); border-radius: 12px; padding: 32px 36px;">
+      <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 20px;">Así se ve el día a día</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+        <div>
+          <div style="font-size: 22px; margin-bottom: 10px;">🧠</div>
+          <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Diseñamos juntos</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6;">Las estrategias se construyen en conversación, no en encargos. Cada decisión tiene dos perspectivas antes de ejecutarse.</div>
+        </div>
+        <div>
+          <div style="font-size: 22px; margin-bottom: 10px;">⚔️</div>
+          <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Defendemos los puntos</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6;">No hay una sola voz. Si algo no cierra, se discute. El mejor argumento gana, no la jerarquía.</div>
+        </div>
+        <div>
+          <div style="font-size: 22px; margin-bottom: 10px;">🚀</div>
+          <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px;">Avanzamos</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6;">Una vez alineados, ejecutamos sin burocracia. El foco está en mover el negocio, no en administrarlo.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Condiciones mínimas -->
+    <div style="margin-top: 28px;">
+      <div style="font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 16px;">Lo que necesito para operar</div>
+      <div class="req-list">
+        <div class="req-item">
+          <div class="req-icon">💼</div>
+          <div class="req-text">
+            <strong>Sueldo fijo mensual por boleta — 3 meses</strong>
+            <span>La base económica que permite dedicación y foco completo durante los 3 meses de intervención. A resultado, evaluamos la continuidad y la forma en que se estructura la compensación.</span>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-icon">💻</div>
+          <div class="req-text">
+            <strong>MacBook corporativa</strong>
+            <span>Para integrar herramientas, plataformas y el Trabajador Digital en el ecosistema de Resility.</span>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-icon">📱</div>
+          <div class="req-text">
+            <strong>Celular y número corporativo</strong>
+            <span>Las conversaciones comerciales deben salir desde la identidad de Resility.</span>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-icon">📬</div>
+          <div class="req-text">
+            <strong>Correo corporativo</strong>
+            <span>Para toda la comunicación comercial y las automatizaciones de Email Marketing.</span>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-icon">👥</div>
+          <div class="req-text">
+            <strong>Acceso a los equipos involucrados</strong>
+            <span>No solo programadores — cualquier persona del equipo que sea parte de los proyectos en curso: técnicos, operativos, diseño, soporte. La colaboración no tiene silos.</span>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-icon">⚙️</div>
+          <div class="req-text">
+            <strong>Presupuesto para APIs y herramientas</strong>
+            <span>Acceso a los recursos necesarios para operar: APIs, suscripciones, plataformas de automatización y cualquier herramienta que el proceso requiera para funcionar.</span>
+          </div>
+        </div>
+        <div class="req-item">
+          <div class="req-icon">💰</div>
+          <div class="req-text">
+            <strong>Presupuesto operativo</strong>
+            <span>Gastos de operación asociados a la actividad comercial: campañas, materiales, reuniones y lo que el ritmo del negocio vaya requiriendo. Se maneja con criterio de dueño.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 06 CIERRE ═══════════ -->
+  <div class="closing">
+    <div class="section-label">09 — Próximos pasos</div>
+    <h2 class="section-title">Cómo empezamos</h2>
+
+    <div class="closing-grid">
+      <div class="next-steps">
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-text">
+            <strong>Nos alineamos en condiciones</strong>
+            <span>Acordamos el sueldo fijo, duración y los accesos que necesito para operar.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-text">
+            <strong>Semana 1 — Kick-off</strong>
+            <span>Me siento con el equipo, levanto procesos existentes y defino las prioridades del primer mes.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-text">
+            <strong>Semanas 2–3 — Diseño</strong>
+            <span>Armo el proceso de prospección, el pitch por segmento y la arquitectura del Trabajador Digital.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-text">
+            <strong>Semana 4 — Instalación</strong>
+            <span>La maquinaria corre. Los primeros contactos salen. Resility en modo comercial activo.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">05</div>
+          <div class="step-text">
+            <strong>Mes 3 — Evaluación y continuidad</strong>
+            <span>Con resultados concretos sobre la mesa, evaluamos continuidad, compensación y el lanzamiento formal de Staff21x.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="closing-quote">
+        <span class="quote-mark">"</span>
+        <p class="quote-text">En 3 meses te dejo lo que nunca tuviste: todos los canales activos, el proceso instalado y funcionando solo. Prospección automatizada, Email Marketing, outbound, LinkedIn, clientes actuales trabajados y cross selling en marcha. Después de eso, hablamos de cómo seguimos.</p>
+        <div class="quote-author">— Walter · Dirección Comercial</div>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric-item">
+        <div class="metric-num">3<span>m</span></div>
+        <div class="metric-label">Plazo para<br>primeros cierres</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-num">1<span>+</span></div>
+        <div class="metric-label">Trabajador digital<br>instalado</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-num">6<span>+</span></div>
+        <div class="metric-label">Canales comerciales<br>activos</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-num">10<span>c</span></div>
+        <div class="metric-label">Clientes actuales<br>a activar</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer>
+    <div class="f-brand">Re<span>sility</span> · resility.io</div>
+    <div class="f-center">Documento confidencial · Uso exclusivo interno</div>
+    <div class="f-date">Febrero 2025</div>
+  </footer>
+
+</div>
+</body>
+</html>
