@@ -236,6 +236,23 @@ Este prospecto dirige una corredora de seguros mediana en Chile. Estas empresas:
 8. Tono: directo, ejecutivo, sin tecnicismos excesivos (hablan con gerentes generales, no CTOs)
 9. Firma: "Equipo Comercial, Resility | CyberSOC con IA"
 
+ASUNTO — REGLAS ESTRICTAS:
+- MÁXIMO 8 PALABRAS. Sin excepción.
+- Estilo provocador, directo, que genere urgencia real e incomodidad
+- Que suene como algo que diría un colega ejecutivo, NO un vendedor
+- PROHIBIDO: palabras corporativas ("solución", "optimizar", "cumplimiento", "satisfacción", "potenciar")
+- PROHIBIDO: empezar con el nombre de la empresa
+- PROHIBIDO: signos de exclamación
+- Debe hacer que el receptor piense "esto me afecta a mí"
+- Ejemplos del TONO y LARGO correcto (úsalos solo como inspiración, NO los copies):
+  "Su empresa ya fue atacada. ¿Está protegida?"
+  "¿Quién cuida los datos de sus clientes hoy?"
+  "Un ataque ransomware cierra corredoras en 48h"
+  "La Ley 21.663 ya tiene multas activas"
+  "Sus clientes confían sus datos. ¿Están seguros?"
+  "¿Cuánto vale la reputación de {contact['empresa']}?"
+- Cada asunto DEBE ser ÚNICO y diferente al de los otros contactos
+
 Devuelve EXACTAMENTE este formato (sin texto adicional):
 ASUNTO: [asunto del email aquí]
 ---
