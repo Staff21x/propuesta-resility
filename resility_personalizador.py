@@ -14,88 +14,80 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import anthropic
 
 # ─────────────────────────────────────────────
-#  CONTACTOS B2B  (10 prospectos Chile/LATAM)
+#  CONTACTOS B2B  (Corredoras de Seguros Chile)
 # ─────────────────────────────────────────────
 CONTACTS = [
     {
-        "nombre": "Carlos Muñoz",
-        "cargo": "CTO",
-        "empresa": "Banco Internacional",
-        "rubro": "Banca / Finanzas",
-        "email": "carlos.munoz@bancointernacional.cl",
-        "telefono": "+56 2 2345 6789",
+        "nombre": "Maria Isabel Sanchez",
+        "cargo": "Gerente General",
+        "empresa": "Beroiza Seguros SPA",
+        "rubro": "Corredora de Seguros",
+        "email": "i.sanchez@beroizaseguros.cl",
+        "telefono": "+56 9 6546295",
     },
     {
-        "nombre": "Daniela Ríos",
-        "cargo": "Gerente de TI",
-        "empresa": "Clinica Las Condes",
-        "rubro": "Salud / Healthcare",
-        "email": "drios@clinicalascondes.cl",
-        "telefono": "+56 2 2210 4000",
+        "nombre": "Lily Justiniano",
+        "cargo": "Gerente General",
+        "empresa": "Seguros Broker Corredores de Seguros",
+        "rubro": "Corredora de Seguros",
+        "email": "ljustiniano@segurosbroker.cl",
+        "telefono": "+56 9 8819457",
     },
     {
-        "nombre": "Andrés Morales",
-        "cargo": "CISO",
-        "empresa": "Falabella Retail",
-        "rubro": "Retail / E-commerce",
-        "email": "andres.morales@falabella.cl",
-        "telefono": "+56 2 2380 9000",
+        "nombre": "Juan Riquelme",
+        "cargo": "Gerente",
+        "empresa": "Alta Fe Corredores de Seguros SPA",
+        "rubro": "Corredora de Seguros",
+        "email": "jriquelme@altafeseguros.cl",
+        "telefono": "+56 9 0783295",
     },
     {
-        "nombre": "Valentina Torres",
-        "cargo": "Directora de Seguridad",
-        "empresa": "Entel Chile",
-        "rubro": "Telecomunicaciones",
-        "email": "vtorres@entel.cl",
-        "telefono": "+56 2 2360 3000",
+        "nombre": "Jorge Urtuvia",
+        "cargo": "Gerente General",
+        "empresa": "Clan Corredores de Seguros",
+        "rubro": "Corredora de Seguros",
+        "email": "jurtuvia@clanseguros.cl",
+        "telefono": "+56 9 6125104",
     },
     {
-        "nombre": "Rodrigo Saavedra",
-        "cargo": "VP Tecnología",
-        "empresa": "AFP Habitat",
-        "rubro": "Gestión de Fondos / AFP",
-        "email": "rodrigo.saavedra@habitat.cl",
-        "telefono": "+56 2 2350 7000",
+        "nombre": "Berenguer Mallol",
+        "cargo": "Director General",
+        "empresa": "MCA Chile Corredores de Seguros",
+        "rubro": "Corredora de Seguros",
+        "email": "bmallol@mcaseguros.cl",
+        "telefono": "+56 9 8394885",
     },
     {
-        "nombre": "Paola Vega",
-        "cargo": "Gerente de Ciberseguridad",
-        "empresa": "Codelco",
-        "rubro": "Minería",
-        "email": "pvega@codelco.cl",
-        "telefono": "+56 2 2690 3000",
+        "nombre": "Roberto Gatica",
+        "cargo": "Gerente",
+        "empresa": "Cono Sur Corredores de Seguros",
+        "rubro": "Corredora de Seguros",
+        "email": "roberto.gatica@conosurseguros.cl",
+        "telefono": "+56 9 1294214",
     },
     {
-        "nombre": "Felipe Contreras",
-        "cargo": "Director de IT",
-        "empresa": "Latam Airlines",
-        "rubro": "Aviación / Transporte",
-        "email": "fcontreras@latam.com",
-        "telefono": "+56 2 2565 1234",
+        "nombre": "Cesar Acevedo",
+        "cargo": "Gerente General",
+        "empresa": "Phersu Corredores de Seguros SPA",
+        "rubro": "Corredora de Seguros",
+        "email": "cesar.acevedo@phersu.cl",
+        "telefono": "+56 9 99977211",
     },
     {
-        "nombre": "Marcela Fuentes",
-        "cargo": "Gerente TI",
-        "empresa": "Colbun",
-        "rubro": "Energía / Generación Eléctrica",
-        "email": "mfuentes@colbun.cl",
-        "telefono": "+56 2 2460 5000",
+        "nombre": "Oscar Harder",
+        "cargo": "Gerente",
+        "empresa": "Oscar Harder e Hija Corredores de Seguros",
+        "rubro": "Corredora de Seguros",
+        "email": "oficina@segurosharder.cl",
+        "telefono": "+56 9 9161735",
     },
     {
-        "nombre": "Sebastián Herrera",
-        "cargo": "Chief Information Officer",
-        "empresa": "Isapre Consalud",
-        "rubro": "Seguros de Salud / Isapre",
-        "email": "sherrera@consalud.cl",
-        "telefono": "+56 2 2640 9000",
-    },
-    {
-        "nombre": "Carolina Pérez",
-        "cargo": "Subgerente de Riesgo Digital",
-        "empresa": "Banco BCI",
-        "rubro": "Banca / Finanzas",
-        "email": "carolina.perez@bci.cl",
-        "telefono": "+56 2 2692 5000",
+        "nombre": "Isidoro Parraguez",
+        "cargo": "Director Ejecutivo",
+        "empresa": "CP Brokers Corredores de Seguros",
+        "rubro": "Corredora de Seguros",
+        "email": "isidoro.parraguez@cpbrokers.cl",
+        "telefono": "+56 9 9180543",
     },
 ]
 
@@ -222,14 +214,27 @@ Contenido relevante:
 ═══ SOBRE RESILITY ═══
 {RESILITY_CONTEXT}
 
+═══ CONTEXTO CLAVE — CORREDORAS DE SEGUROS ═══
+Este prospecto dirige una corredora de seguros mediana en Chile. Estas empresas:
+- Manejan datos financieros y de salud de cientos o miles de clientes (pólizas, siniestros, RUT, cuentas)
+- NO tienen equipo de ciberseguridad propio — dependen de TI general o nada
+- Están directamente sujetas a la Ley 21.663 (Ley Marco de Ciberseguridad, Chile, 2024) que obliga
+  a proteger datos personales y reportar incidentes bajo multas de hasta 40.000 UTM (~$3.000 MM CLP)
+- Un ataque ransomware o filtración de datos las destruye en reputación y clientes
+- La CMF exige estándares de seguridad crecientes para intermediarios del mercado asegurador
+- Son el eslabón más débil de la cadena: atacantes las usan como puerta de entrada a aseguradoras
+
 ═══ INSTRUCCIONES ═══
-1. Escribe un correo profesional en español, tono cálido pero ejecutivo
-2. PRIMERA LÍNEA: referencia algo ESPECÍFICO de la empresa/rubro/noticias para demostrar que investigaste
-3. Conecta el dolor/necesidad específica del rubro con lo que ofrece Resility
-4. Menciona 2-3 beneficios concretos y relevantes para SU industria
-5. CTA claro: proponer una llamada de 20 minutos
-6. Extensión: 180-250 palabras (ni demasiado corto ni largo)
-7. Firma: usa "Equipo Comercial, Resility | CyberSOC con IA"
+1. Correo CORTO y DIRECTO: 130-180 palabras máximo
+2. Saludo por NOMBRE (no "Estimado/a")
+3. PRIMERA LÍNEA: menciona algo específico de {contact['empresa']} o del sector corredoras/seguros
+   que demuestre que investigaste (usa el contenido web si hay, si no usa el contexto del sector)
+4. Ángulo principal: manejan datos sensibles de clientes SIN protección adecuada → riesgo real bajo Ley 21.663
+5. Propuesta: Resility como su equipo de ciberseguridad externalizado, sin costo de armar un equipo propio
+6. 1 beneficio concreto y cuantificable
+7. CTA: proponer una llamada de 15 minutos esta semana
+8. Tono: directo, ejecutivo, sin tecnicismos excesivos (hablan con gerentes generales, no CTOs)
+9. Firma: "Equipo Comercial, Resility | CyberSOC con IA"
 
 Devuelve EXACTAMENTE este formato (sin texto adicional):
 ASUNTO: [asunto del email aquí]
@@ -262,7 +267,7 @@ def build_excel(results: list, output_path: str):
     """Genera un Excel bien formateado con todos los resultados."""
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Correos Personalizados Resility"
+    ws.title = "Correos Resility — Corredoras"
 
     # Estilos
     header_fill = PatternFill("solid", fgColor="0A1628")   # Azul oscuro Resility
@@ -354,7 +359,7 @@ def main():
     client = anthropic.Anthropic(api_key=api_key)
 
     print("=" * 65)
-    print("  RESILITY — Personalizador de Correos B2B con IA")
+    print("  RESILITY — Corredoras de Seguros Chile")
     print(f"  {len(CONTACTS)} contactos  |  {datetime.now().strftime('%d/%m/%Y %H:%M')}")
     print("=" * 65)
 
@@ -403,12 +408,12 @@ def main():
             time.sleep(2)
 
     # Generar Excel
-    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resility_correos_b2b.xlsx")
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resility_correos_corredoras.xlsx")
     build_excel(results, output_path)
 
     print("\n" + "=" * 65)
     print(f"  PROCESO COMPLETADO  —  {len(results)} correos generados")
-    print(f"  Archivo: resility_correos_b2b.xlsx")
+    print(f"  Archivo: resility_correos_corredoras.xlsx")
     print("=" * 65)
 
 
