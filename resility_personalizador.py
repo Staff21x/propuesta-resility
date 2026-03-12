@@ -190,6 +190,41 @@ def search_news(empresa: str, rubro: str) -> str:
     return " | ".join(snippets) if snippets else "Sin noticias específicas encontradas."
 
 
+def verify_linkedin(nombre: str, empresa: str) -> str:
+    """Busca en DuckDuckGo si la persona sigue activa en ese cargo (2025/2026)."""
+    query = f'"{nombre}" "{empresa}" linkedin 2025 OR 2026'
+    url = f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=12)
+        soup = BeautifulSoup(resp.text, "lxml")
+
+        # Revisar títulos y snippets de resultados
+        titles   = [t.get_text(strip=True).lower() for t in soup.select(".result__title")[:5]]
+        snippets = [s.get_text(strip=True).lower() for s in soup.select(".result__snippet")[:5]]
+        all_text = " ".join(titles + snippets)
+
+        nombre_lower   = nombre.lower()
+        empresa_lower  = empresa.lower().split()[0]   # primera palabra de la empresa
+        nombre_partes  = nombre_lower.split()
+
+        # Coincidencia: al menos apellido + empresa en resultados recientes
+        menciona_persona  = any(p in all_text for p in nombre_partes if len(p) > 3)
+        menciona_empresa  = empresa_lower in all_text
+        menciona_reciente = "2025" in all_text or "2026" in all_text
+        es_linkedin       = "linkedin" in all_text or "linkedin.com" in " ".join(
+            [a.get("href", "") for a in soup.select(".result__title a")]
+        )
+
+        if menciona_persona and (menciona_empresa or es_linkedin) and menciona_reciente:
+            return "✅ Verificado"
+        elif menciona_persona or es_linkedin:
+            return "⚠️ Verificar manualmente"
+        else:
+            return "⚠️ Verificar manualmente"
+    except Exception:
+        return "⚠️ Verificar manualmente"
+
+
 def generate_email(contact: dict, web_url: str, web_content: str, news: str, client: anthropic.Anthropic) -> tuple[str, str]:
     """Llama a Claude para redactar asunto + cuerpo del correo personalizado."""
 
@@ -303,15 +338,15 @@ def build_excel(results: list, output_path: str):
     )
 
     # Título
-    ws.merge_cells("A1:K1")
+    ws.merge_cells("A1:L1")
     ws["A1"] = f"RESILITY — Correos de Ventas Personalizados  |  Generado: {datetime.now().strftime('%d/%m/%Y %H:%M')}"
     ws["A1"].font = title_font
     ws["A1"].fill = header_fill
     ws["A1"].alignment = center
 
     # Cabeceras
-    columns = ["#", "Nombre", "Cargo", "Empresa", "Rubro", "Email", "Teléfono", "Web Encontrada", "Asunto", "Correo Personalizado", "Estado"]
-    widths   = [4,    18,      18,      22,         22,      28,      16,          30,               40,       70,                      12]
+    columns = ["#", "Nombre", "Cargo", "Empresa", "Rubro", "Email", "Teléfono", "Web Encontrada", "Asunto", "Correo Personalizado", "Estado", "Verificación LinkedIn"]
+    widths   = [4,    18,      18,      22,         22,      28,      16,          30,               40,       70,                      12,       24]
 
     for col_idx, (col_name, width) in enumerate(zip(columns, widths), start=1):
         cell = ws.cell(row=2, column=col_idx, value=col_name)
@@ -340,6 +375,7 @@ def build_excel(results: list, output_path: str):
             row.get("asunto", ""),
             row.get("correo", ""),
             row.get("estado", "OK"),
+            row.get("linkedin_verificacion", "⚠️ Verificar manualmente"),
         ]
         for col_idx, val in enumerate(values, start=1):
             cell = ws.cell(row=r, column=col_idx, value=val)
@@ -351,6 +387,14 @@ def build_excel(results: list, output_path: str):
                 ws.row_dimensions[r].height = 120
             elif col_idx in (9,):  # Asunto
                 cell.alignment = Alignment(vertical="center", wrap_text=True)
+            elif col_idx == 12:    # Verificación LinkedIn
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+                if str(val).startswith("✅"):
+                    cell.fill = PatternFill("solid", fgColor="D1FAE5")   # verde claro
+                    cell.font = Font(name="Calibri", size=10, color="065F46")
+                else:
+                    cell.fill = PatternFill("solid", fgColor="FEF3C7")   # amarillo claro
+                    cell.font = Font(name="Calibri", size=10, color="92400E")
             else:
                 cell.alignment = Alignment(vertical="center")
 
@@ -397,6 +441,10 @@ def main():
         snippets = news.count("|") + 1 if news and news != "Sin noticias específicas encontradas." else 0
         print(f" {snippets} snippets encontrados")
 
+        print(f"  🔍  Verificando LinkedIn...", end="", flush=True)
+        linkedin_verificacion = verify_linkedin(contact["nombre"], contact["empresa"])
+        print(f" {linkedin_verificacion}")
+
         print(f"  🤖  Generando correo con Claude...", end="", flush=True)
         try:
             asunto, correo = generate_email(contact, web_url, web_content, news, client)
@@ -418,6 +466,7 @@ def main():
             "asunto": asunto,
             "correo": correo,
             "estado": estado,
+            "linkedin_verificacion": linkedin_verificacion,
         })
 
         # Pausa para respetar rate limits
