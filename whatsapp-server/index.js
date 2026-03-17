@@ -28,6 +28,63 @@ let estadoCliente = 'disconnected'; // disconnected | qr_pending | connected
 let qrImageBase64 = null;
 
 // ============================================================
+// HELPERS - EXTRACCION Y FORMATO DE NUMERO
+// ============================================================
+
+// Convierte dígitos crudos a formato +56XXXXXXXXX (o +XXXXXXXXXXX para otros países)
+function formatearNumero(digits) {
+  if (!digits || digits.length < 7) return null;
+  // Ya trae código de país Chile: 569XXXXXXXX (11 dígitos)
+  if (digits.startsWith('56') && digits.length === 11) return '+' + digits;
+  // Número local chileno sin código de país: 9XXXXXXXX (9 dígitos)
+  if (digits.startsWith('9') && digits.length === 9)   return '+56' + digits;
+  // Cualquier otro país: devolver con + tal cual
+  return '+' + digits;
+}
+
+// Extrae el número de teléfono real desde el mensaje de Baileys.
+// Maneja los dos formatos de JID:
+//   - numero@s.whatsapp.net  → número real
+//   - xxxxxxx@lid            → ID de dispositivo WhatsApp, NO es un teléfono;
+//                              en ese caso busca el número en msg.participant
+//                              o en verifiedBizName, pushName como ultimo recurso.
+function extraerNumero(msg) {
+  const jid = msg.key.remoteJid || '';
+
+  // Caso normal: JID tiene número de teléfono directamente
+  if (jid.endsWith('@s.whatsapp.net')) {
+    const digits = jid.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+    return formatearNumero(digits);
+  }
+
+  // Caso LID (@lid): WhatsApp nuevo formato de ID de dispositivo.
+  // El número real puede venir en msg.key.participant (chats de grupo/broadcast)
+  // o en msg.participant.
+  if (jid.endsWith('@lid')) {
+    const candidatos = [
+      msg.key.participant || '',
+      msg.participant     || ''
+    ];
+    for (const c of candidatos) {
+      if (c.endsWith('@s.whatsapp.net')) {
+        const digits = c.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+        const num    = formatearNumero(digits);
+        if (num) return num;
+      }
+    }
+    // Ultimo recurso: usar la parte numérica del LID como identificador
+    // (no es un teléfono válido, pero evita perder el mensaje)
+    const lidUser = jid.split('@')[0].replace(/\D/g, '');
+    console.warn(`[WSP] LID sin telefono real (JID: ${jid}). Usando LID: ${lidUser}`);
+    return lidUser || null;
+  }
+
+  // Fallback genérico
+  const digits = jid.split('@')[0].replace(/\D/g, '');
+  return formatearNumero(digits);
+}
+
+// ============================================================
 // CLIENTE BAILEYS
 // ============================================================
 async function iniciarCliente() {
@@ -105,7 +162,11 @@ async function iniciarCliente() {
                        '';
         if (!texto) continue;
 
-        const numero = msg.key.remoteJid.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+        const numero = extraerNumero(msg);
+        if (!numero) {
+          console.warn('[MSG IN] No se pudo extraer numero del JID:', msg.key.remoteJid);
+          continue;
+        }
         console.log(`[MSG IN] ${numero}: ${texto.substring(0, 80)}`);
 
         await axios.post(WEBHOOK_URL, {
