@@ -48,7 +48,7 @@ function formatearNumero(digits) {
 //   - xxxxxxx@lid            → ID de dispositivo WhatsApp, NO es un teléfono;
 //                              en ese caso busca el número en msg.participant
 //                              o en verifiedBizName, pushName como ultimo recurso.
-function extraerNumero(msg) {
+async function extraerNumero(msg) {
   const jid = msg.key.remoteJid || '';
 
   // Caso normal: JID tiene número de teléfono directamente
@@ -58,25 +58,22 @@ function extraerNumero(msg) {
   }
 
   // Caso LID (@lid): WhatsApp nuevo formato de ID de dispositivo.
-  // El número real puede venir en msg.key.participant (chats de grupo/broadcast)
-  // o en msg.participant.
+  // Consultar a WhatsApp el JID real con onWhatsApp().
   if (jid.endsWith('@lid')) {
-    const candidatos = [
-      msg.key.participant || '',
-      msg.participant     || ''
-    ];
-    for (const c of candidatos) {
-      if (c.endsWith('@s.whatsapp.net')) {
-        const digits = c.replace('@s.whatsapp.net', '').replace(/\D/g, '');
-        const num    = formatearNumero(digits);
-        if (num) return num;
+    try {
+      const resultados = await socket.onWhatsApp(jid);
+      if (resultados && resultados.length > 0 && resultados[0].exists) {
+        const jidReal = resultados[0].jid; // formato: numero@s.whatsapp.net
+        const digits  = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+        const num     = formatearNumero(digits);
+        console.log(`[WSP] LID ${jid} resuelto a: ${num}`);
+        return num;
       }
+    } catch (e) {
+      console.error(`[WSP] Error resolviendo LID ${jid}:`, e.message);
     }
-    // Ultimo recurso: usar la parte numérica del LID como identificador
-    // (no es un teléfono válido, pero evita perder el mensaje)
-    const lidUser = jid.split('@')[0].replace(/\D/g, '');
-    console.warn(`[WSP] LID sin telefono real (JID: ${jid}). Usando LID: ${lidUser}`);
-    return lidUser || null;
+    console.warn(`[WSP] LID no resuelto, descartando mensaje (JID: ${jid})`);
+    return null;
   }
 
   // Fallback genérico
@@ -162,7 +159,7 @@ async function iniciarCliente() {
                        '';
         if (!texto) continue;
 
-        const numero = extraerNumero(msg);
+        const numero = await extraerNumero(msg);
         if (!numero) {
           console.warn('[MSG IN] No se pudo extraer numero del JID:', msg.key.remoteJid);
           continue;
