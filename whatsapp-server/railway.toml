@@ -1,0 +1,16 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 5
+
+[[services]]
+name = "whatsapp-server"
+
+[services.variables]
+PORT = "3000"
+# Configura estas variables en el dashboard de Railway:
+# WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxg.../exec"
+# API_TOKEN   = "tu-token-secreto-aqui"
