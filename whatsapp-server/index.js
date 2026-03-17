@@ -167,19 +167,27 @@ async function iniciarCliente() {
           console.warn('[MSG IN] No se pudo extraer numero del JID:', msg.key.remoteJid);
           continue;
         }
-        console.log(`[MSG IN] ${numero}: ${texto.substring(0, 80)}`);
+        console.log(`[MSG IN] JID raw: ${msg.key.remoteJid} | Numero extraido: ${numero}`);
+        console.log(`[MSG IN] Texto: ${texto.substring(0, 80)}`);
 
-        await axios.post(WEBHOOK_URL, {
+        const payload = {
           event: 'message:in:new',
           data:  { body: texto, fromNumber: numero }
-        }, {
+        };
+
+        console.log('[WEBHOOK] URL:  ', WEBHOOK_URL);
+        console.log('[WEBHOOK] Body: ', JSON.stringify(payload));
+
+        const resp = await axios.post(WEBHOOK_URL, payload, {
           timeout: 15000,
           headers: { 'Content-Type': 'application/json' }
         });
 
-        console.log('[WEBHOOK] Forward exitoso a Google Apps Script');
+        console.log(`[WEBHOOK] Respuesta HTTP: ${resp.status} | Body: ${JSON.stringify(resp.data).substring(0, 200)}`);
       } catch (err) {
-        console.error('[WEBHOOK] Error al hacer forward:', err.message);
+        const status = err.response?.status;
+        const body   = JSON.stringify(err.response?.data || {}).substring(0, 200);
+        console.error(`[WEBHOOK] ERROR: ${err.message} | HTTP: ${status} | Body: ${body}`);
       }
     }
   });
