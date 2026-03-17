@@ -127,6 +127,9 @@ async function iniciarCliente() {
   // Poblar mapa LID→JID real a partir de actualizaciones de contactos
   socket.ev.on('contacts.upsert', (contacts) => {
     for (const c of contacts) {
+      if (c.lid) {
+        console.log('[LID DEBUG] contacts.upsert con lid:', JSON.stringify(c));
+      }
       if (c.lid && c.id) {
         lidMap.set(c.lid, c.id);
       }
@@ -189,6 +192,12 @@ async function iniciarCliente() {
                        msg.message?.extendedTextMessage?.text ||
                        '';
         if (!texto) continue;
+
+        if (msg.key.remoteJid.endsWith('@lid')) {
+          console.log('[LID DEBUG] msg.key completo:', JSON.stringify(msg.key));
+          console.log('[LID DEBUG] msg fields:', Object.keys(msg));
+          if (msg.participant) console.log('[LID DEBUG] msg.participant:', msg.participant);
+        }
 
         const numero = await extraerNumero(msg);
         if (!numero) {
