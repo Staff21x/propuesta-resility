@@ -1,6 +1,6 @@
-const makeWASocket   = require('@whiskeysockets/baileys').default;
+const makeWASocket   = require('baileys').default;
 const { useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } =
-  require('@whiskeysockets/baileys');
+  require('baileys');
 const { Boom }       = require('@hapi/boom');
 const QRCode         = require('qrcode');
 const qrcode         = require('qrcode-terminal');
