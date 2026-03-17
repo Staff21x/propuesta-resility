@@ -6,6 +6,7 @@ const QRCode         = require('qrcode');
 const qrcode         = require('qrcode-terminal');
 const express        = require('express');
 const axios          = require('axios');
+const fs             = require('fs');
 const path           = require('path');
 
 // ============================================================
@@ -84,11 +85,32 @@ async function extraerNumero(msg) {
 // ============================================================
 // CLIENTE BAILEYS
 // ============================================================
+function limpiarSesion() {
+  try {
+    if (fs.existsSync(SESSION_DIR)) {
+      fs.rmSync(SESSION_DIR, { recursive: true, force: true });
+      console.log('[SESSION] Carpeta de sesion eliminada:', SESSION_DIR);
+    }
+    fs.mkdirSync(SESSION_DIR, { recursive: true });
+  } catch (e) {
+    console.error('[SESSION] Error limpiando sesion:', e.message);
+  }
+}
+
 async function iniciarCliente() {
   console.log('[WSP] Iniciando cliente Baileys...');
 
   const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
-  const { version }          = await fetchLatestBaileysVersion();
+
+  // Fallback a version conocida si falla la consulta a GitHub
+  let version;
+  try {
+    ({ version } = await fetchLatestBaileysVersion());
+    console.log('[WSP] Version WA obtenida:', version.join('.'));
+  } catch (e) {
+    version = [2, 3000, 1015901307];
+    console.warn('[WSP] fetchLatestBaileysVersion fallo, usando version fallback:', version.join('.'));
+  }
 
   socket = makeWASocket({
     version,
@@ -137,7 +159,9 @@ async function iniciarCliente() {
       console.log(`[WSP] Desconectado. Codigo: ${codigo} | Razon: ${razon}`);
 
       if (codigo === DisconnectReason.loggedOut) {
-        console.log('[WSP] Sesion cerrada. Borra la carpeta de sesion y reinicia.');
+        console.log('[WSP] Sesion cerrada (loggedOut). Limpiando sesion y generando nuevo QR...');
+        limpiarSesion();
+        setTimeout(iniciarCliente, 3000);
       } else {
         console.log('[WSP] Reconectando en 5 segundos...');
         setTimeout(iniciarCliente, 5000);
@@ -219,6 +243,21 @@ app.get('/status', (req, res) => {
     qr_disponible: estadoCliente === 'qr_pending',
     timestamp:     new Date().toISOString()
   });
+});
+
+// Forzar nuevo QR: borra sesion y reinicia el cliente
+// Util cuando WhatsApp desvinculo el dispositivo y el QR no aparece
+app.post('/session/reset', verificarToken, async (req, res) => {
+  console.log('[SESSION] Reset solicitado via API');
+  estadoCliente = 'disconnected';
+  qrImageBase64 = null;
+  if (socket) {
+    try { socket.end(); } catch (_) {}
+    socket = null;
+  }
+  limpiarSesion();
+  res.json({ ok: true, mensaje: 'Sesion reiniciada. El QR aparecera en /qr en unos segundos.' });
+  setTimeout(iniciarCliente, 2000);
 });
 
 // QR como pagina HTML (util para Railway)
