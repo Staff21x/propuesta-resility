@@ -28,6 +28,9 @@ let socket        = null;
 let estadoCliente = 'disconnected'; // disconnected | qr_pending | connected
 let qrImageBase64 = null;
 
+// Mapa LID → JID real (@s.whatsapp.net), poblado por contacts.upsert
+const lidMap = new Map();
+
 // ============================================================
 // HELPERS - EXTRACCION Y FORMATO DE NUMERO
 // ============================================================
@@ -59,21 +62,16 @@ async function extraerNumero(msg) {
   }
 
   // Caso LID (@lid): WhatsApp nuevo formato de ID de dispositivo.
-  // Consultar a WhatsApp el JID real con onWhatsApp().
+  // onWhatsApp() NO puede resolver LIDs; usamos el mapa local contacts.upsert.
   if (jid.endsWith('@lid')) {
-    try {
-      const resultados = await socket.onWhatsApp(jid);
-      if (resultados && resultados.length > 0 && resultados[0].exists) {
-        const jidReal = resultados[0].jid; // formato: numero@s.whatsapp.net
-        const digits  = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
-        const num     = formatearNumero(digits);
-        console.log(`[WSP] LID ${jid} resuelto a: ${num}`);
-        return num;
-      }
-    } catch (e) {
-      console.error(`[WSP] Error resolviendo LID ${jid}:`, e.message);
+    const jidReal = lidMap.get(jid);
+    if (jidReal) {
+      const digits = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+      const num    = formatearNumero(digits);
+      console.log(`[WSP] LID ${jid} resuelto a: ${num}`);
+      return num;
     }
-    console.warn(`[WSP] LID no resuelto, descartando mensaje (JID: ${jid})`);
+    console.warn(`[WSP] LID no resuelto aun (sin contacto en cache), descartando (JID: ${jid})`);
     return null;
   }
 
@@ -125,6 +123,15 @@ async function iniciarCliente() {
 
   // Guardar credenciales cuando se actualicen
   socket.ev.on('creds.update', saveCreds);
+
+  // Poblar mapa LID→JID real a partir de actualizaciones de contactos
+  socket.ev.on('contacts.upsert', (contacts) => {
+    for (const c of contacts) {
+      if (c.lid && c.id) {
+        lidMap.set(c.lid, c.id);
+      }
+    }
+  });
 
   // Conexion y QR
   socket.ev.on('connection.update', async (update) => {
