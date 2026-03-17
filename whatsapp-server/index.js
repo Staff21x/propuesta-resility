@@ -1,16 +1,21 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
-const QRCode = require('qrcode');
-const express = require('express');
-const axios = require('axios');
+const makeWASocket   = require('@whiskeysockets/baileys').default;
+const { useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } =
+  require('@whiskeysockets/baileys');
+const { Boom }       = require('@hapi/boom');
+const QRCode         = require('qrcode');
+const qrcode         = require('qrcode-terminal');
+const express        = require('express');
+const axios          = require('axios');
+const path           = require('path');
 
 // ============================================================
 // CONFIGURACION
 // ============================================================
-const PORT          = process.env.PORT || 3000;
-const WEBHOOK_URL   = process.env.WEBHOOK_URL ||
+const PORT        = process.env.PORT || 3000;
+const WEBHOOK_URL = process.env.WEBHOOK_URL ||
   'https://script.google.com/macros/s/AKfycbxgapir6qhMpusj5zYSztufS95bz5epC05YEqkF5vcAVQczXGJw-7BV8fz5HzqaGr0Fow/exec';
-const API_TOKEN     = process.env.API_TOKEN || 'staff21x-secret-2024';
+const API_TOKEN   = process.env.API_TOKEN || 'staff21x-secret-2024';
+const SESSION_DIR = process.env.SESSION_DIR || '/app/.wsp_session';
 
 // ============================================================
 // EXPRESS
@@ -18,110 +23,105 @@ const API_TOKEN     = process.env.API_TOKEN || 'staff21x-secret-2024';
 const app = express();
 app.use(express.json());
 
-// Estado global del cliente
-let clienteWsp     = null;
-let estadoCliente  = 'disconnected'; // disconnected | qr_pending | connected
-let qrImageBase64  = null;
+let socket        = null;
+let estadoCliente = 'disconnected'; // disconnected | qr_pending | connected
+let qrImageBase64 = null;
 
 // ============================================================
-// CLIENTE WHATSAPP
+// CLIENTE BAILEYS
 // ============================================================
-function iniciarCliente() {
-  console.log('[WSP] Iniciando cliente WhatsApp...');
+async function iniciarCliente() {
+  console.log('[WSP] Iniciando cliente Baileys...');
 
-  clienteWsp = new Client({
-    authStrategy: new LocalAuth({ dataPath: '/app/.wsp_session' }),
-    puppeteer: {
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-        '--disable-gpu'
-      ]
+  const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
+  const { version }          = await fetchLatestBaileysVersion();
+
+  socket = makeWASocket({
+    version,
+    auth:                state,
+    printQRInTerminal:   false,   // lo manejamos nosotros
+    browser:             ['Staff21x PAZ', 'Chrome', '120.0.0'],
+    connectTimeoutMs:    60000,
+    defaultQueryTimeoutMs: 30000,
+    keepAliveIntervalMs: 25000,
+    logger:              require('pino')({ level: 'silent' })
+  });
+
+  // Guardar credenciales cuando se actualicen
+  socket.ev.on('creds.update', saveCreds);
+
+  // Conexion y QR
+  socket.ev.on('connection.update', async (update) => {
+    const { connection, lastDisconnect, qr } = update;
+
+    if (qr) {
+      estadoCliente = 'qr_pending';
+      console.log('\n========================================');
+      console.log('  ESCANEA ESTE QR CON WHATSAPP');
+      console.log('  WhatsApp > Dispositivos vinculados > +');
+      console.log('========================================\n');
+      qrcode.generate(qr, { small: true });
+
+      try {
+        qrImageBase64 = await QRCode.toDataURL(qr);
+      } catch (e) {
+        console.error('[QR] Error generando imagen:', e.message);
+      }
     }
-  });
 
-  // QR para vincular
-  clienteWsp.on('qr', async (qr) => {
-    estadoCliente = 'qr_pending';
-    console.log('\n========================================');
-    console.log('  ESCANEA ESTE QR CON WHATSAPP');
-    console.log('  WhatsApp > Dispositivos vinculados > +');
-    console.log('========================================\n');
-    qrcode.generate(qr, { small: true });
-
-    // Tambien guardar como imagen base64 para el endpoint /qr
-    try {
-      qrImageBase64 = await QRCode.toDataURL(qr);
-    } catch (e) {
-      console.error('[QR] Error generando imagen:', e.message);
+    if (connection === 'open') {
+      estadoCliente = 'connected';
+      qrImageBase64 = null;
+      const user = socket.user;
+      console.log('\n[WSP] Conectado como:', user.name || user.id, '|', user.id);
     }
-  });
 
-  // Listo
-  clienteWsp.on('ready', () => {
-    estadoCliente = 'connected';
-    qrImageBase64 = null;
-    const info = clienteWsp.info;
-    console.log('\n[WSP] ✓ Conectado como:', info.pushname, '|', info.wid.user);
-  });
+    if (connection === 'close') {
+      estadoCliente = 'disconnected';
+      const codigo  = new Boom(lastDisconnect?.error)?.output?.statusCode;
+      const razon   = lastDisconnect?.error?.message || 'desconocida';
+      console.log(`[WSP] Desconectado. Codigo: ${codigo} | Razon: ${razon}`);
 
-  // Desconexion
-  clienteWsp.on('disconnected', (reason) => {
-    estadoCliente = 'disconnected';
-    console.log('[WSP] Desconectado:', reason);
-    console.log('[WSP] Reiniciando en 10 segundos...');
-    setTimeout(iniciarCliente, 10000);
-  });
-
-  // Autenticado (sesion existente cargada)
-  clienteWsp.on('authenticated', () => {
-    console.log('[WSP] Sesion autenticada correctamente.');
-  });
-
-  // Error de autenticacion
-  clienteWsp.on('auth_failure', (msg) => {
-    estadoCliente = 'disconnected';
-    console.error('[WSP] Error de autenticacion:', msg);
+      if (codigo === DisconnectReason.loggedOut) {
+        console.log('[WSP] Sesion cerrada. Borra la carpeta de sesion y reinicia.');
+      } else {
+        console.log('[WSP] Reconectando en 5 segundos...');
+        setTimeout(iniciarCliente, 5000);
+      }
+    }
   });
 
   // MENSAJES ENTRANTES → forward al webhook
-  clienteWsp.on('message', async (msg) => {
-    try {
-      // Ignorar mensajes propios y de grupos
-      if (msg.fromMe) return;
-      if (msg.from.includes('@g.us')) return;
+  socket.ev.on('messages.upsert', async ({ messages, type }) => {
+    if (type !== 'notify') return;
 
-      const numero = msg.from.replace('@c.us', '').replace(/\D/g, '');
-      const texto  = msg.body;
+    for (const msg of messages) {
+      try {
+        if (msg.key.fromMe)                    continue; // ignorar propios
+        if (msg.key.remoteJid.endsWith('@g.us')) continue; // ignorar grupos
 
-      console.log(`[MSG IN] ${numero}: ${texto.substring(0, 80)}`);
+        const texto  = msg.message?.conversation ||
+                       msg.message?.extendedTextMessage?.text ||
+                       '';
+        if (!texto) continue;
 
-      const payload = {
-        event: 'message:in:new',
-        data: {
-          body:       texto,
-          fromNumber: numero
-        }
-      };
+        const numero = msg.key.remoteJid.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+        console.log(`[MSG IN] ${numero}: ${texto.substring(0, 80)}`);
 
-      await axios.post(WEBHOOK_URL, payload, {
-        timeout: 15000,
-        headers: { 'Content-Type': 'application/json' }
-      });
+        await axios.post(WEBHOOK_URL, {
+          event: 'message:in:new',
+          data:  { body: texto, fromNumber: numero }
+        }, {
+          timeout: 15000,
+          headers: { 'Content-Type': 'application/json' }
+        });
 
-      console.log(`[WEBHOOK] ✓ Forward exitoso a Google Apps Script`);
-    } catch (err) {
-      console.error('[WEBHOOK] Error al hacer forward:', err.message);
+        console.log('[WEBHOOK] Forward exitoso a Google Apps Script');
+      } catch (err) {
+        console.error('[WEBHOOK] Error al hacer forward:', err.message);
+      }
     }
   });
-
-  clienteWsp.initialize();
 }
 
 // ============================================================
@@ -138,17 +138,14 @@ function verificarToken(req, res, next) {
 // ============================================================
 // ENDPOINTS
 // ============================================================
-
-// Estado del servidor
 app.get('/', (req, res) => {
   res.json({
-    servicio:  'WhatsApp Server - Staff21x PAZ',
+    servicio:  'WhatsApp Server - Staff21x PAZ (Baileys)',
     estado:    estadoCliente,
     timestamp: new Date().toISOString()
   });
 });
 
-// Ver estado detallado
 app.get('/status', (req, res) => {
   res.json({
     estado:        estadoCliente,
@@ -158,40 +155,38 @@ app.get('/status', (req, res) => {
   });
 });
 
-// Ver QR como imagen HTML (util para Railway)
+// QR como pagina HTML (util para Railway)
 app.get('/qr', (req, res) => {
   if (estadoCliente === 'connected') {
-    return res.send('<h2>✓ WhatsApp ya esta conectado</h2>');
+    return res.send('<h2 style="font-family:sans-serif;color:#128C7E">WhatsApp ya esta conectado</h2>');
   }
   if (!qrImageBase64) {
-    return res.send('<h2>Generando QR... Recarga en unos segundos.</h2><meta http-equiv="refresh" content="3">');
+    return res.send('<h2 style="font-family:sans-serif">Generando QR...</h2><meta http-equiv="refresh" content="3">');
   }
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>QR WhatsApp - Staff21x</title>
-      <meta http-equiv="refresh" content="30">
-      <style>
-        body { font-family: sans-serif; display:flex; flex-direction:column;
-               align-items:center; justify-content:center; min-height:100vh;
-               background:#f0f0f0; margin:0; }
-        img  { border:8px solid white; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.2); }
-        h2   { color:#128C7E; }
-        p    { color:#666; }
-      </style>
-    </head>
-    <body>
-      <h2>Escanea con WhatsApp</h2>
-      <p>WhatsApp → Dispositivos vinculados → Vincular dispositivo</p>
-      <img src="${qrImageBase64}" width="300" height="300" />
-      <p style="margin-top:16px; font-size:12px;">Se actualiza automaticamente cada 30s</p>
-    </body>
-    </html>
-  `);
+  res.send(`<!DOCTYPE html>
+<html>
+<head>
+  <title>QR WhatsApp - Staff21x</title>
+  <meta http-equiv="refresh" content="30">
+  <style>
+    body { font-family:sans-serif; display:flex; flex-direction:column;
+           align-items:center; justify-content:center; min-height:100vh;
+           background:#f0f0f0; margin:0; }
+    img  { border:8px solid white; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.2); }
+    h2   { color:#128C7E; }
+    p    { color:#666; }
+  </style>
+</head>
+<body>
+  <h2>Escanea con WhatsApp</h2>
+  <p>WhatsApp → Dispositivos vinculados → Vincular dispositivo</p>
+  <img src="${qrImageBase64}" width="300" height="300"/>
+  <p style="margin-top:16px;font-size:12px">Se actualiza automaticamente cada 30s</p>
+</body>
+</html>`);
 });
 
-// ENVIAR MENSAJE - endpoint principal para Wassenger-compatible
+// POST /send  →  { phone, message }
 app.post('/send', verificarToken, async (req, res) => {
   try {
     const { phone, message } = req.body;
@@ -203,41 +198,49 @@ app.post('/send', verificarToken, async (req, res) => {
       return res.status(503).json({ error: 'WhatsApp no esta conectado', estado: estadoCliente });
     }
 
-    // Normalizar numero → formato WhatsApp
     const numeroLimpio = phone.replace(/\D/g, '');
-    const chatId       = numeroLimpio + '@c.us';
+    const jid          = numeroLimpio + '@s.whatsapp.net';
 
-    await clienteWsp.sendMessage(chatId, message);
-    console.log(`[SEND] ✓ Mensaje enviado a ${numeroLimpio}`);
+    await socket.sendMessage(jid, { text: message });
+    console.log(`[SEND] Mensaje enviado a ${numeroLimpio}`);
 
-    res.status(201).json({
-      success: true,
-      phone:   numeroLimpio,
-      message: message
-    });
+    res.status(201).json({ success: true, phone: numeroLimpio, message });
   } catch (err) {
     console.error('[SEND] Error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-// Endpoint compatible con formato Wassenger (mismo que usa paz.gs)
+// Alias compatible con formato Wassenger (usado en paz.gs)
 app.post('/v1/messages', verificarToken, async (req, res) => {
-  return app._router.handle(
-    Object.assign(req, { url: '/send', path: '/send' }),
-    res,
-    () => {}
-  );
+  try {
+    const { phone, message } = req.body;
+    if (!phone || !message) {
+      return res.status(400).json({ error: 'Faltan campos: phone y message son requeridos' });
+    }
+    if (estadoCliente !== 'connected') {
+      return res.status(503).json({ error: 'WhatsApp no esta conectado', estado: estadoCliente });
+    }
+    const numeroLimpio = phone.replace(/\D/g, '');
+    await socket.sendMessage(numeroLimpio + '@s.whatsapp.net', { text: message });
+    console.log(`[SEND] Mensaje enviado a ${numeroLimpio}`);
+    res.status(201).json({ success: true, phone: numeroLimpio, message });
+  } catch (err) {
+    console.error('[SEND] Error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ============================================================
 // ARRANCAR
 // ============================================================
 app.listen(PORT, () => {
-  console.log(`\n[SERVER] Staff21x WhatsApp Server corriendo en puerto ${PORT}`);
+  console.log(`\n[SERVER] Staff21x WhatsApp Server (Baileys) en puerto ${PORT}`);
   console.log(`[SERVER] Webhook destino: ${WEBHOOK_URL}`);
-  console.log(`[SERVER] Token API:       ${API_TOKEN}`);
   console.log(`[SERVER] Ver QR en:       http://localhost:${PORT}/qr\n`);
 });
 
-iniciarCliente();
+iniciarCliente().catch(err => {
+  console.error('[FATAL] Error al iniciar cliente:', err);
+  process.exit(1);
+});
