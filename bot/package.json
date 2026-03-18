@@ -1,0 +1,23 @@
+{
+  "name": "resility-bot",
+  "version": "1.0.0",
+  "description": "WhatsApp bot optimizado para Resility — respuesta < 5s",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@whiskeysockets/baileys": "^6.7.18",
+    "express": "^4.21.2",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "dotenv": "^16.4.7",
+    "node-cache": "^5.1.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
