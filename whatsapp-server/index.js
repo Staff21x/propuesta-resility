@@ -87,27 +87,37 @@ async function extraerNumero(msg) {
 
   // Caso LID (@lid): WhatsApp nuevo formato de ID de dispositivo.
   if (jid.endsWith('@lid')) {
-    // Primero intentar remoteJidAlt que Baileys ya incluye en msg.key
-    const altJid = msg.key.remoteJidAlt;
-    if (altJid && altJid.endsWith('@s.whatsapp.net')) {
-      const digits = altJid.replace('@s.whatsapp.net', '').replace(/\D/g, '');
-      const num    = formatearNumero(digits);
-      console.log(`[WSP] LID ${jid} resuelto via remoteJidAlt: ${num}`);
-      return num;
+    // Helper: extraer numero de cualquier valor string con formato @s.whatsapp.net
+    function resolverDesdeJidStr(valor, fuente) {
+      if (typeof valor !== 'string') return null;
+      const limpio = valor.trim();
+      const match  = limpio.match(/^(\d+)@s\.whatsapp\.net$/);
+      if (!match) return null;
+      const num = formatearNumero(match[1]);
+      if (num) console.log(`[WSP] LID ${jid} resuelto via ${fuente}: ${num}`);
+      return num || null;
     }
 
-    // Fallback: mapa local contacts.upsert (re-chequea remoteJidAlt en cada intento)
+    // 1. remoteJidAlt directo
+    const numAlt = resolverDesdeJidStr(msg.key.remoteJidAlt, 'remoteJidAlt');
+    if (numAlt) return numAlt;
+
+    // 2. Escaneo de todos los campos string de msg.key (por si el campo tiene otro nombre en esta version de Baileys)
+    for (const [campo, valor] of Object.entries(msg.key)) {
+      if (campo === 'remoteJid' || campo === 'id') continue; // saltar JID LID e ID de mensaje
+      const num = resolverDesdeJidStr(valor, `msg.key.${campo}`);
+      if (num) return num;
+    }
+
+    console.log(`[LID] altJid no disponible aun. msg.key: ${JSON.stringify(msg.key)}`);
+
+    // 3. Fallback: mapa local contacts.upsert con reintentos
     const MAX_REINTENTOS = 4;
     const ESPERA_MS      = 2000;
     for (let i = 0; i <= MAX_REINTENTOS; i++) {
-      // remoteJidAlt puede llegar async desde Baileys; re-leer en cada intento
-      const altJidRetry = msg.key.remoteJidAlt;
-      if (altJidRetry && altJidRetry.endsWith('@s.whatsapp.net')) {
-        const digits = altJidRetry.replace('@s.whatsapp.net', '').replace(/\D/g, '');
-        const num    = formatearNumero(digits);
-        console.log(`[WSP] LID ${jid} resuelto via remoteJidAlt (reintento ${i}): ${num}`);
-        return num;
-      }
+      // Re-leer remoteJidAlt en cada intento (Baileys puede popularlo async)
+      const numRetry = resolverDesdeJidStr(msg.key.remoteJidAlt, `remoteJidAlt-retry${i}`);
+      if (numRetry) return numRetry;
 
       const jidReal = lidMap.get(jid);
       if (jidReal) {
