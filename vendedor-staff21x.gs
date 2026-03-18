@@ -520,18 +520,23 @@ function guardarEmailEnMemoria(ss, config, id, email) {
 // ============================================================
 function enviarWassenger(config, num, msg) {
   try {
+    const numLimpio = String(num).startsWith('+') ? String(num) : '+' + String(num).replace(/\D/g, '');
     const res = UrlFetchApp.fetch('https://whatsapp-server-production-65d9.up.railway.app/send', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
         'x-api-token': 'staff21x2026'
       },
-      payload: JSON.stringify({phone: num, message: msg}),
+      payload: JSON.stringify({phone: numLimpio, message: msg}),
       muteHttpExceptions: true
     });
     const code = res.getResponseCode();
-    Logger.log('WSP Server [' + num + ']: ' + code);
-    return code === 200;
+    if (code !== 200) {
+      Logger.log('ERROR WSP Server [' + numLimpio + ']: HTTP ' + code + ' | ' + res.getContentText().substring(0, 400));
+      return false;
+    }
+    Logger.log('WSP Server OK [' + numLimpio + ']');
+    return true;
   } catch (e) {
     Logger.log('Error WSP Server: ' + e);
     return false;
@@ -552,7 +557,7 @@ function llamarIA(config, sys, user) {
           "Content-Type":  "application/json"
         },
         payload: JSON.stringify({
-          model:       "gpt-4o",
+          model:       "gpt-4o-mini",
           messages:    [{role: "system", content: sys}, {role: "user", content: user}],
           temperature: 0.7,
           max_tokens:  1000
