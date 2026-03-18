@@ -96,10 +96,19 @@ async function extraerNumero(msg) {
       return num;
     }
 
-    // Fallback: mapa local contacts.upsert
+    // Fallback: mapa local contacts.upsert (re-chequea remoteJidAlt en cada intento)
     const MAX_REINTENTOS = 4;
     const ESPERA_MS      = 2000;
     for (let i = 0; i <= MAX_REINTENTOS; i++) {
+      // remoteJidAlt puede llegar async desde Baileys; re-leer en cada intento
+      const altJidRetry = msg.key.remoteJidAlt;
+      if (altJidRetry && altJidRetry.endsWith('@s.whatsapp.net')) {
+        const digits = altJidRetry.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+        const num    = formatearNumero(digits);
+        console.log(`[WSP] LID ${jid} resuelto via remoteJidAlt (reintento ${i}): ${num}`);
+        return num;
+      }
+
       const jidReal = lidMap.get(jid);
       if (jidReal) {
         const digits = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
