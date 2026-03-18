@@ -1,6 +1,6 @@
 // ============================================================
 // PAZ DE VENTAS - STAFF21X - TD-OTEC
-// VERSION: v4.2 - Fix webhook timeout + deadline OpenAI
+// VERSION: v4.3 - Optimizacion latencia: historial, deadline, cache config
 // ============================================================
 function configurarKeys() {
   const props = PropertiesService.getScriptProperties();
@@ -11,16 +11,23 @@ function configurarKeys() {
   Logger.log("Keys configuradas. Borra los valores y guarda.");
 }
 function getConfig() {
-  const props = PropertiesService.getScriptProperties();
-  return {
+  // v4.3: CacheService evita leer PropertiesService en cada ejecucion
+  const cache  = CacheService.getScriptCache();
+  const cached = cache.get("paz_config");
+  if (cached) return JSON.parse(cached);
+
+  const props  = PropertiesService.getScriptProperties();
+  const config = {
     OPENAI_API_KEY:  props.getProperty("OPENAI_API_KEY")  || "",
     WASSENGER_TOKEN: props.getProperty("WASSENGER_TOKEN") || "",
     EMAIL_STAFF21X:  props.getProperty("EMAIL_STAFF21X")  || "",
     LANDING_OTEC:    props.getProperty("LANDING_OTEC")    || "https://www.staff21x.com/otec",
     SPREADSHEET_ID:  "1Mc8eTZfhUWuU9BSbNOEJrg1zUmxzkvFAtgxuVOhzY84",
     CALENDAR_ID:     "primary",
-    MAX_HISTORIAL:   3000
+    MAX_HISTORIAL:   1500  // v4.3: reducido de 3000 → 1500 chars (~50% menos tokens)
   };
+  cache.put("paz_config", JSON.stringify(config), 60); // TTL: 60 segundos
+  return config;
 }
 // ============================================================
 // ROL DE PAZ
@@ -563,7 +570,7 @@ function llamarIA(config, sys, user) {
           max_tokens:  1000
         }),
         muteHttpExceptions: true,
-        deadline: 55  // FIX: era 10 s por defecto, ahora 55 s (máximo permitido)
+        deadline: 25  // v4.3: reducido de 55 → 25 s; falla rapido si hay problema real
       });
       if (res.getResponseCode() === 200) {
         return JSON.parse(res.getContentText()).choices[0].message.content;
