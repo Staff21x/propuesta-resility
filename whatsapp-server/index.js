@@ -17,6 +17,7 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL ||
   'https://script.google.com/macros/s/AKfycbxgapir6qhMpusj5zYSztufS95bz5epC05YEqkF5vcAVQczXGJw-7BV8fz5HzqaGr0Fow/exec';
 const API_TOKEN   = process.env.API_TOKEN || 'staff21x-secret-2024';
 const SESSION_DIR = process.env.SESSION_DIR || '/app/.wsp_session';
+const LID_MAP_FILE = path.join(SESSION_DIR, 'lid_map.json');
 
 // ============================================================
 // EXPRESS
@@ -28,8 +29,31 @@ let socket        = null;
 let estadoCliente = 'disconnected'; // disconnected | qr_pending | connected
 let qrImageBase64 = null;
 
-// Mapa LID → JID real (@s.whatsapp.net), poblado por contacts.upsert
+// Mapa LID → JID real (@s.whatsapp.net), poblado por contacts.upsert y persistido en disco
 const lidMap = new Map();
+
+function cargarLidMap() {
+  try {
+    if (fs.existsSync(LID_MAP_FILE)) {
+      const data = JSON.parse(fs.readFileSync(LID_MAP_FILE, 'utf8'));
+      for (const [k, v] of Object.entries(data)) {
+        lidMap.set(k, v);
+      }
+      console.log(`[LID] Mapa cargado desde disco: ${lidMap.size} entradas`);
+    }
+  } catch (e) {
+    console.warn('[LID] No se pudo cargar lid_map.json:', e.message);
+  }
+}
+
+function guardarLidMap() {
+  try {
+    fs.mkdirSync(path.dirname(LID_MAP_FILE), { recursive: true });
+    fs.writeFileSync(LID_MAP_FILE, JSON.stringify(Object.fromEntries(lidMap), null, 2));
+  } catch (e) {
+    console.warn('[LID] No se pudo guardar lid_map.json:', e.message);
+  }
+}
 
 // ============================================================
 // HELPERS - EXTRACCION Y FORMATO DE NUMERO
@@ -64,14 +88,22 @@ async function extraerNumero(msg) {
   // Caso LID (@lid): WhatsApp nuevo formato de ID de dispositivo.
   // onWhatsApp() NO puede resolver LIDs; usamos el mapa local contacts.upsert.
   if (jid.endsWith('@lid')) {
-    const jidReal = lidMap.get(jid);
-    if (jidReal) {
-      const digits = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
-      const num    = formatearNumero(digits);
-      console.log(`[WSP] LID ${jid} resuelto a: ${num}`);
-      return num;
+    const MAX_REINTENTOS = 4;
+    const ESPERA_MS      = 2000;
+    for (let i = 0; i <= MAX_REINTENTOS; i++) {
+      const jidReal = lidMap.get(jid);
+      if (jidReal) {
+        const digits = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+        const num    = formatearNumero(digits);
+        console.log(`[WSP] LID ${jid} resuelto a: ${num}${i > 0 ? ` (intento ${i + 1})` : ''}`);
+        return num;
+      }
+      if (i < MAX_REINTENTOS) {
+        console.log(`[LID] Esperando resolucion de ${jid} (intento ${i + 1}/${MAX_REINTENTOS})...`);
+        await new Promise(r => setTimeout(r, ESPERA_MS));
+      }
     }
-    console.warn(`[WSP] LID no resuelto aun (sin contacto en cache), descartando (JID: ${jid})`);
+    console.warn(`[WSP] LID no resuelto tras ${MAX_REINTENTOS} reintentos, descartando (JID: ${jid})`);
     return null;
   }
 
@@ -84,6 +116,7 @@ async function extraerNumero(msg) {
 // CLIENTE BAILEYS
 // ============================================================
 function limpiarSesion() {
+  lidMap.clear();
   try {
     if (fs.existsSync(SESSION_DIR)) {
       fs.rmSync(SESSION_DIR, { recursive: true, force: true });
@@ -99,6 +132,7 @@ async function iniciarCliente() {
   console.log('[WSP] Iniciando cliente Baileys...');
 
   const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
+  cargarLidMap();
 
   // Fallback a version conocida si falla la consulta a GitHub
   let version;
@@ -126,14 +160,27 @@ async function iniciarCliente() {
 
   // Poblar mapa LID→JID real a partir de actualizaciones de contactos
   socket.ev.on('contacts.upsert', (contacts) => {
+    let changed = false;
     for (const c of contacts) {
-      if (c.lid) {
-        console.log('[LID DEBUG] contacts.upsert con lid:', JSON.stringify(c));
-      }
       if (c.lid && c.id) {
         lidMap.set(c.lid, c.id);
+        changed = true;
+        console.log(`[LID] contacts.upsert: ${c.lid} → ${c.id}`);
       }
     }
+    if (changed) guardarLidMap();
+  });
+
+  socket.ev.on('contacts.update', (updates) => {
+    let changed = false;
+    for (const c of updates) {
+      if (c.lid && c.id) {
+        lidMap.set(c.lid, c.id);
+        changed = true;
+        console.log(`[LID] contacts.update: ${c.lid} → ${c.id}`);
+      }
+    }
+    if (changed) guardarLidMap();
   });
 
   // Conexion y QR
