@@ -77,6 +77,8 @@ function formatearNumero(digits) {
 //                              en ese caso busca el número en msg.participant
 //                              o en verifiedBizName, pushName como ultimo recurso.
 async function extraerNumero(msg) {
+  // LOG INMEDIATO al entrar — diagnóstico de remoteJidAlt
+  console.log('[EXTRAER] remoteJid:', msg.key?.remoteJid, '| remoteJidAlt:', msg.key?.remoteJidAlt, '| type:', typeof msg.key?.remoteJidAlt);
   const jid = msg.key.remoteJid || '';
 
   // Caso normal: JID tiene número de teléfono directamente
