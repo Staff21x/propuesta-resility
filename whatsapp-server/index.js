@@ -86,8 +86,17 @@ async function extraerNumero(msg) {
   }
 
   // Caso LID (@lid): WhatsApp nuevo formato de ID de dispositivo.
-  // onWhatsApp() NO puede resolver LIDs; usamos el mapa local contacts.upsert.
   if (jid.endsWith('@lid')) {
+    // Primero intentar remoteJidAlt que Baileys ya incluye en msg.key
+    const altJid = msg.key.remoteJidAlt;
+    if (altJid && altJid.endsWith('@s.whatsapp.net')) {
+      const digits = altJid.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+      const num    = formatearNumero(digits);
+      console.log(`[WSP] LID ${jid} resuelto via remoteJidAlt: ${num}`);
+      return num;
+    }
+
+    // Fallback: mapa local contacts.upsert
     const MAX_REINTENTOS = 4;
     const ESPERA_MS      = 2000;
     for (let i = 0; i <= MAX_REINTENTOS; i++) {
@@ -95,7 +104,7 @@ async function extraerNumero(msg) {
       if (jidReal) {
         const digits = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
         const num    = formatearNumero(digits);
-        console.log(`[WSP] LID ${jid} resuelto a: ${num}${i > 0 ? ` (intento ${i + 1})` : ''}`);
+        console.log(`[WSP] LID ${jid} resuelto via lidMap: ${num}${i > 0 ? ` (intento ${i + 1})` : ''}`);
         return num;
       }
       if (i < MAX_REINTENTOS) {
