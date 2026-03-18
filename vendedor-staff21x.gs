@@ -181,8 +181,8 @@ function procesarCola() {
   for (let i = 1; i < datos.length; i++) {
     if (datos[i][3] !== "PENDIENTE") continue;
 
-    const numero = datos[i][1];
-    const texto  = datos[i][2];
+    const numero = String(datos[i][1]);
+    const texto  = String(datos[i][2]);
 
     // Marcar como EN_PROCESO para evitar doble procesamiento
     cola.getRange(i + 1, 4).setValue("EN_PROCESO");
