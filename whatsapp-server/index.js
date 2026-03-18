@@ -100,10 +100,41 @@ async function extraerNumero(msg) {
       }
     }
 
+    // Intentar signalRepository.lidMapping (Baileys 7 — fuente autoritativa)
+    if (socket && socket.signalRepository) {
+      try {
+        const pnJid = await socket.signalRepository.lidMapping.getPNForLID(jid);
+        if (pnJid) {
+          const digits = pnJid.split(':')[0].split('@')[0].replace(/\D/g, '');
+          const num    = formatearNumero(digits);
+          if (num) {
+            console.log(`[WSP] LID ${jid} resuelto via signalRepository: ${num}`);
+            return num;
+          }
+        }
+      } catch (e) {
+        console.warn('[LID] Error en signalRepository.getPNForLID:', e.message);
+      }
+    }
+
     // Fallback: mapa local contacts.upsert con reintentos
     const MAX_REINTENTOS = 4;
     const ESPERA_MS      = 2000;
     for (let i = 0; i <= MAX_REINTENTOS; i++) {
+      // Reintentar signalRepository en cada vuelta (puede haberse poblado mientras esperábamos)
+      if (socket && socket.signalRepository) {
+        try {
+          const pnJid = await socket.signalRepository.lidMapping.getPNForLID(jid);
+          if (pnJid) {
+            const digits = pnJid.split(':')[0].split('@')[0].replace(/\D/g, '');
+            const num    = formatearNumero(digits);
+            if (num) {
+              console.log(`[WSP] LID ${jid} resuelto via signalRepository (intento ${i + 1}): ${num}`);
+              return num;
+            }
+          }
+        } catch (_) { /* ignorar */ }
+      }
       const jidReal = lidMap.get(jid);
       if (jidReal) {
         const digits = jidReal.replace('@s.whatsapp.net', '').replace(/\D/g, '');
