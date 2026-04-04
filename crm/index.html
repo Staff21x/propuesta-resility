@@ -3,442 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM - Staff21x</title>
+    <title>CRM — Staff21x | Resility</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; color: #333; }
-
-        header {
-            background: #0f4c81;
-            color: white;
-            padding: 16px 28px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        header h1 { font-size: 1.4rem; letter-spacing: 0.5px; }
-
-        .tabs {
-            display: flex;
-            background: #0d3f6e;
-            padding: 0 28px;
-        }
-        .tab {
-            padding: 11px 26px;
-            cursor: pointer;
-            color: rgba(255,255,255,0.65);
-            font-size: 0.88rem;
-            font-weight: 600;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        .tab:hover { color: white; }
-        .tab.active { color: white; border-bottom-color: #4fc3f7; }
-
-        .content { padding: 28px; max-width: 1150px; margin: 0 auto; }
-        .panel { display: none; }
-        .panel.active { display: block; }
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 28px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-        }
-        .card h2 { font-size: 1.05rem; color: #0f4c81; margin-bottom: 22px; }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group.full { grid-column: 1 / -1; }
-
-        label { font-size: 0.82rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.4px; }
-        input, textarea, select {
-            padding: 10px 13px;
-            border: 1.5px solid #ddd;
-            border-radius: 7px;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-            font-family: inherit;
-            background: #fafafa;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #0f4c81;
-            background: white;
-        }
-        textarea { resize: vertical; min-height: 85px; }
-
-        .btn {
-            padding: 10px 26px;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 0.88rem;
-            font-weight: 700;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-        .btn-primary { background: #0f4c81; color: white; }
-        .btn-primary:hover { background: #0d3f6e; }
-        .btn-sm { padding: 5px 13px; font-size: 0.78rem; }
-        .btn-email { background: #e3f2fd; color: #0f4c81; border: 1px solid #bbdefb; }
-        .btn-email:hover { background: #bbdefb; }
-        .btn-wa { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        .btn-wa:hover { background: #c8e6c9; }
-        .btn-cancel { background: #f5f5f5; color: #666; }
-        .btn-cancel:hover { background: #e0e0e0; }
-
-        .form-actions { margin-top: 22px; display: flex; gap: 12px; align-items: center; }
-        .msg { font-size: 0.84rem; padding: 7px 14px; border-radius: 6px; }
-        .msg-ok { background: #e8f5e9; color: #2e7d32; }
-        .msg-err { background: #ffebee; color: #c62828; }
-
-        /* Table */
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-        .search-box {
-            padding: 9px 14px;
-            border: 1.5px solid #ddd;
-            border-radius: 7px;
-            width: 270px;
-            font-size: 0.88rem;
-        }
-        .search-box:focus { outline: none; border-color: #0f4c81; }
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th {
-            background: #0f4c81;
-            color: white;
-            padding: 11px 13px;
-            text-align: left;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-        td {
-            padding: 10px 13px;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 0.85rem;
-            vertical-align: middle;
-        }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: #f8f9ff; }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 11px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-        .badge-pending { background: #fff8e1; color: #f57f17; }
-        .badge-ok { background: #e8f5e9; color: #2e7d32; }
-        .badge-no { background: #ffebee; color: #c62828; }
-
-        .estado-select {
-            border: none;
-            cursor: pointer;
-            font-size: 0.78rem;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-family: inherit;
-            -webkit-appearance: none;
-        }
-
-        .actions { display: flex; gap: 6px; }
-
-        /* Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.open { display: flex; }
-        .modal {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            width: 520px;
-            max-width: 95vw;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.25);
-        }
-        .modal h3 { color: #0f4c81; margin-bottom: 20px; font-size: 1.05rem; }
-        .modal .form-group { margin-bottom: 14px; }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
-
-        .loading { color: #aaa; font-size: 0.9rem; text-align: center; padding: 48px; }
-        .empty { color: #bbb; font-size: 0.9rem; text-align: center; padding: 48px; }
-
-        .req-cell {
-            max-width: 180px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        @media (max-width: 640px) {
-            .content { padding: 16px; }
-            .form-grid { grid-template-columns: 1fr; }
-            .table-header { flex-direction: column; gap: 12px; align-items: stretch; }
-            .search-box { width: 100%; }
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f0f4f8;color:#333}
+        header{background:#0f4c81;color:white;padding:14px 24px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+        header h1{font-size:1.3rem;flex:1}
+        .gear-btn{background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1}
+        .gear-btn:hover{background:rgba(255,255,255,.15)}
+        .tabs{display:flex;background:#0d3f6e;padding:0 24px;overflow-x:auto}
+        .tab{padding:11px 20px;cursor:pointer;color:rgba(255,255,255,.65);font-size:.85rem;font-weight:700;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;user-select:none}
+        .tab:hover{color:white}
+        .tab.active{color:white;border-bottom-color:#4fc3f7}
+        .content{padding:22px;max-width:1150px;margin:0 auto}
+        .panel{display:none}
+        .panel.active{display:block}
+        .card{background:white;border-radius:10px;padding:24px;box-shadow:0 1px 6px rgba(0,0,0,.08);margin-bottom:16px}
+        .card h2{font-size:1.05rem;color:#0f4c81;margin-bottom:20px}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .form-group{display:flex;flex-direction:column;gap:5px}
+        .form-group.full{grid-column:1/-1}
+        label{font-size:.8rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.3px}
+        input,textarea,select{padding:10px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:.9rem;transition:border-color .2s;font-family:inherit;background:#fafafa}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:#0f4c81;background:white}
+        textarea{resize:vertical;min-height:80px}
+        input[type=file]{padding:8px 12px;font-size:.83rem;background:white}
+        .file-hint{font-size:.76rem;color:#999;margin-top:3px}
+        .btn{padding:10px 22px;border:none;border-radius:7px;cursor:pointer;font-size:.88rem;font-weight:700;transition:all .2s;font-family:inherit}
+        .btn-primary{background:#0f4c81;color:white}
+        .btn-primary:hover{background:#0d3f6e}
+        .btn-sm{padding:5px 12px;font-size:.78rem}
+        .btn-email{background:#e3f2fd;color:#0f4c81;border:1px solid #bbdefb}
+        .btn-email:hover{background:#bbdefb}
+        .btn-wa{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9}
+        .btn-wa:hover{background:#c8e6c9}
+        .btn-archivo{background:#fff3e0;color:#e65100;border:1px solid #ffcc80}
+        .btn-archivo:hover{background:#ffcc80}
+        .btn-cancel{background:#f5f5f5;color:#666}
+        .btn-cancel:hover{background:#e0e0e0}
+        .btn-success{background:#2e7d32;color:white}
+        .btn-success:hover{background:#1b5e20}
+        .form-actions{margin-top:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+        .msg{font-size:.83rem;padding:7px 13px;border-radius:6px}
+        .msg-ok{background:#e8f5e9;color:#2e7d32}
+        .msg-err{background:#ffebee;color:#c62828}
+        .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:700}
+        .badge-pending{background:#fff8e1;color:#f57f17}
+        .badge-ok{background:#e8f5e9;color:#2e7d32}
+        .badge-no{background:#ffebee;color:#c62828}
+        .estado-select{border:none;cursor:pointer;font-size:.78rem;padding:4px 8px;border-radius:12px;font-weight:700;font-family:inherit;-webkit-appearance:none}
+        .emp-badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:.75rem;font-weight:700}
+        .emp-staff{background:#e3f2fd;color:#0f4c81}
+        .emp-resility{background:#f3e8ff;color:#6b21a8}
+        /* EMPRESA SELECTOR */
+        .empresa-btns{display:flex;gap:10px;margin-top:4px}
+        .empresa-btn{flex:1;padding:13px;border:2px solid #ddd;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:700;background:white;transition:all .2s;font-family:inherit}
+        .empresa-btn.staff:hover,.empresa-btn.staff.selected{border-color:#0f4c81;background:#e3f2fd;color:#0f4c81}
+        .empresa-btn.resility:hover,.empresa-btn.resility.selected{border-color:#6b21a8;background:#f3e8ff;color:#6b21a8}
+        /* DASHBOARD */
+        .dash-section{margin-bottom:16px}
+        .dash-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+        .dash-card{background:white;border-radius:10px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.08);text-align:center;border-top:4px solid #ccc}
+        .dash-card.d-blue{border-top-color:#0f4c81}
+        .dash-card.d-yellow{border-top-color:#f57f17}
+        .dash-card.d-green{border-top-color:#2e7d32}
+        .dash-card.d-red{border-top-color:#c62828}
+        .dash-card.d-purple{border-top-color:#6b21a8}
+        .dash-num{font-size:2rem;font-weight:700;color:#1a1a2e;line-height:1.1}
+        .dash-lbl{font-size:.78rem;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+        .dash-monto{font-size:.88rem;color:#555;margin-top:4px}
+        .dash-estado-lbl{font-size:.78rem;font-weight:700;color:#777;margin-bottom:6px;text-transform:uppercase}
+        .dash-emp-badge{display:inline-block;padding:3px 14px;border-radius:12px;font-size:.78rem;font-weight:700;margin-bottom:8px}
+        .dash-emp-badge.staff{background:#e3f2fd;color:#0f4c81}
+        .dash-emp-badge.resility{background:#f3e8ff;color:#6b21a8}
+        /* IA PANEL */
+        .ia-hint{color:#666;font-size:.88rem;margin-bottom:14px;line-height:1.5}
+        .ia-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
+        .ia-row textarea{flex:1;min-height:120px;font-size:.95rem}
+        .mic-btn{padding:10px 14px;border:2px solid #0f4c81;border-radius:8px;background:white;color:#0f4c81;cursor:pointer;font-size:.85rem;font-weight:700;white-space:nowrap;transition:all .2s}
+        .mic-btn:hover{background:#e3f2fd}
+        .mic-btn.recording{border-color:#c62828;color:#c62828;background:#ffebee}
+        .ia-preview{margin-top:18px;border:2px solid #4fc3f7;border-radius:8px;padding:16px;background:#f0f9ff}
+        .ia-preview h3{font-size:.92rem;color:#0f4c81;margin-bottom:12px}
+        .preview-row{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid #e0f0ff;font-size:.86rem}
+        .preview-row:last-child{border-bottom:none}
+        .preview-key{font-weight:700;color:#555;min-width:110px}
+        /* TABLE */
+        .table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+        .table-filters{display:flex;gap:8px;flex-wrap:wrap}
+        .search-box,.filter-select{padding:8px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:.87rem;background:white}
+        .search-box{width:220px}
+        .search-box:focus,.filter-select:focus{outline:none;border-color:#0f4c81}
+        .table-wrap{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;min-width:700px}
+        th{background:#0f4c81;color:white;padding:10px 12px;text-align:left;font-size:.79rem;font-weight:700;white-space:nowrap}
+        td{padding:9px 12px;border-bottom:1px solid #f0f0f0;font-size:.84rem;vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#f8f9ff}
+        .req-cell{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .actions{display:flex;gap:5px}
+        /* MODAL */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal{background:white;border-radius:12px;padding:28px;width:500px;max-width:95vw;box-shadow:0 8px 40px rgba(0,0,0,.25)}
+        .modal h3{color:#0f4c81;margin-bottom:18px;font-size:1.05rem}
+        .modal .form-group{margin-bottom:13px}
+        .modal-actions{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap}
+        .loading{color:#aaa;text-align:center;padding:44px;font-size:.9rem}
+        .empty{color:#bbb;text-align:center;padding:44px;font-size:.9rem}
+        @media(max-width:640px){.form-grid{grid-template-columns:1fr}.dash-grid-2,.dash-grid-3{grid-template-columns:1fr}.ia-row{flex-direction:column}.mic-btn{width:100%}.table-header{flex-direction:column}.search-box{width:100%}}
     </style>
 </head>
 <body>
-
 <header>
     <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-    <h1>CRM &mdash; Staff21x</h1>
+    <h1>CRM &mdash; Staff21x | Resility</h1>
+    <button class="gear-btn" onclick="abrirSettings()" title="Configurar API Key OpenAI">&#9881;</button>
 </header>
 
 <div class="tabs">
-    <div class="tab active" data-tab="nuevo" onclick="showTab('nuevo', this)">+ Nuevo Contacto</div>
-    <div class="tab" data-tab="contactos" onclick="showTab('contactos', this)">Lista de Contactos</div>
+    <div class="tab active" data-tab="dashboard" onclick="showTab('dashboard',this)">Dashboard</div>
+    <div class="tab" data-tab="ia" onclick="showTab('ia',this)">&#10024; Captura IA</div>
+    <div class="tab" data-tab="nuevo" onclick="showTab('nuevo',this)">+ Nuevo</div>
+    <div class="tab" data-tab="contactos" onclick="showTab('contactos',this)">Contactos</div>
 </div>
 
 <div class="content">
 
-    <!-- PANEL: NUEVO CONTACTO -->
-    <div class="panel active" id="panel-nuevo">
-        <div class="card">
-            <h2>Registrar Nuevo Contacto</h2>
-            <form id="form-contacto" onsubmit="guardarContacto(event)">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Nombre *</label>
-                        <input type="text" id="nombre" required placeholder="Juan">
-                    </div>
-                    <div class="form-group">
-                        <label>Apellido *</label>
-                        <input type="text" id="apellido" required placeholder="Pérez">
-                    </div>
-                    <div class="form-group">
-                        <label>Correo *</label>
-                        <input type="email" id="correo" required placeholder="juan@correo.com">
-                    </div>
-                    <div class="form-group">
-                        <label>WhatsApp</label>
-                        <input type="text" id="whatsapp" placeholder="+51 999 999 999">
-                    </div>
-                    <div class="form-group full">
-                        <label>Requerimiento *</label>
-                        <textarea id="requerimiento" required placeholder="Describe lo que necesita el cliente..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Cotización (S/. o USD)</label>
-                        <input type="text" id="cotizacion" placeholder="1,500.00">
-                    </div>
-                    <div class="form-group">
-                        <label>Estado inicial</label>
-                        <select id="estado">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="Aceptado">Aceptado</option>
-                            <option value="No Aceptado">No Aceptado</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar Contacto</button>
-                    <span id="form-msg"></span>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- PANEL: CONTACTOS -->
-    <div class="panel" id="panel-contactos">
-        <div class="card">
-            <div class="table-header">
-                <h2 style="margin-bottom:0">Contactos Registrados</h2>
-                <input type="text" class="search-box" placeholder="Buscar nombre, correo..." oninput="filtrar(this.value)">
-            </div>
-            <div class="table-wrap">
-                <div id="tabla-container"><div class="loading">Cargando contactos...</div></div>
-            </div>
-        </div>
-    </div>
-
+<!-- DASHBOARD -->
+<div class="panel active" id="panel-dashboard">
+    <div id="dash-content"><div class="loading">Cargando dashboard...</div></div>
 </div>
 
-<!-- MODAL: ENVIAR CORREO -->
+<!-- CAPTURA IA -->
+<div class="panel" id="panel-ia">
+    <div class="card">
+        <h2>&#10024; Captura R&aacute;pida con IA</h2>
+        <p class="ia-hint">Dicta o escribe lo que pas&oacute; en la reuni&oacute;n. La IA extrae nombre, requerimiento, cotizaci&oacute;n y m&aacute;s autom&aacute;ticamente.</p>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>&#191;Para qu&eacute; empresa es esta oportunidad?</label>
+            <div class="empresa-btns">
+                <button type="button" class="empresa-btn staff" data-val="Staff21x" onclick="selEmpresaIA(this)">Staff21x</button>
+                <button type="button" class="empresa-btn resility" data-val="Resility" onclick="selEmpresaIA(this)">Resility</button>
+            </div>
+            <input type="hidden" id="ia-empresa">
+        </div>
+        <div class="ia-row">
+            <textarea id="ia-texto" placeholder="Ejemplo: Hoy sal&#237; de reuni&#243;n con la empresa MONTOTO, habl&#233; con Fabi&#225;n, me pidieron una propuesta para redise&#241;ar su web, presupuesto aproximado 3000 d&#243;lares, su correo es fabian@montoto.com"></textarea>
+            <button class="mic-btn" id="btn-mic" onclick="toggleVoz()">&#127908; Hablar</button>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary" onclick="procesarConIA()">&#10024; Procesar con IA</button>
+            <span id="ia-msg"></span>
+        </div>
+        <div class="ia-preview" id="ia-preview" style="display:none">
+            <h3>Datos extra&#237;dos &mdash; revisa antes de guardar</h3>
+            <div id="ia-preview-content"></div>
+            <div class="form-actions" style="margin-top:14px">
+                <button class="btn btn-success" onclick="llenarFormulario()">Llenar formulario &#8594;</button>
+                <button class="btn btn-cancel" onclick="limpiarIA()">Limpiar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- NUEVO CONTACTO -->
+<div class="panel" id="panel-nuevo">
+    <div class="card">
+        <h2>Registrar Nuevo Contacto</h2>
+        <form id="form-contacto" onsubmit="guardarContacto(event)">
+            <div class="form-group full" style="margin-bottom:16px">
+                <label>Empresa *</label>
+                <div class="empresa-btns">
+                    <button type="button" class="empresa-btn staff" data-val="Staff21x" onclick="selEmpresaForm(this)">Staff21x</button>
+                    <button type="button" class="empresa-btn resility" data-val="Resility" onclick="selEmpresaForm(this)">Resility</button>
+                </div>
+                <input type="hidden" id="empresa" required>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" id="nombre" required placeholder="Juan">
+                </div>
+                <div class="form-group">
+                    <label>Apellido <span style="font-weight:400;text-transform:none;font-size:.75rem;color:#999">(opcional)</span></label>
+                    <input type="text" id="apellido" placeholder="P&eacute;rez">
+                </div>
+                <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" id="correo" placeholder="juan@correo.com">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp</label>
+                    <input type="text" id="whatsapp" placeholder="+51 999 999 999">
+                </div>
+                <div class="form-group full">
+                    <label>Requerimiento *</label>
+                    <textarea id="requerimiento" required placeholder="Describe lo que necesita el cliente..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Cotizaci&oacute;n (S/. o USD)</label>
+                    <input type="text" id="cotizacion" placeholder="1,500.00">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="estado">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Aceptado">Aceptado</option>
+                        <option value="No Aceptado">No Aceptado</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>Cotizaci&oacute;n adjunta <span style="font-weight:400;text-transform:none;font-size:.75rem;color:#999">(opcional &mdash; PDF, imagen)</span></label>
+                    <input type="file" id="archivo" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.xlsx">
+                    <span class="file-hint">M&aacute;x. 10 MB &mdash; se guarda en Google Drive</span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar Contacto</button>
+                <span id="form-msg"></span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- CONTACTOS -->
+<div class="panel" id="panel-contactos">
+    <div class="card">
+        <div class="table-header">
+            <h2 style="margin-bottom:0">Contactos</h2>
+            <div class="table-filters">
+                <select class="filter-select" id="filtro-empresa" onchange="aplicarFiltros()">
+                    <option value="">Todas las empresas</option>
+                    <option>Staff21x</option>
+                    <option>Resility</option>
+                </select>
+                <input type="text" class="search-box" id="search-input" placeholder="Buscar..." oninput="aplicarFiltros()">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <div id="tabla-container"><div class="loading">Cargando...</div></div>
+        </div>
+    </div>
+</div>
+
+</div><!-- /content -->
+<!-- MODAL EMAIL -->
 <div class="modal-overlay" id="modal-email">
     <div class="modal">
         <h3>&#9993; Enviar Correo</h3>
-        <div class="form-group">
-            <label>Para</label>
-            <input type="email" id="email-to" readonly style="background:#f5f5f5;color:#666">
-        </div>
-        <div class="form-group">
-            <label>Asunto *</label>
-            <input type="text" id="email-subject" placeholder="Ej: Cotización de servicios Staff21x">
-        </div>
-        <div class="form-group">
-            <label>Mensaje *</label>
-            <textarea id="email-body" style="min-height:150px" placeholder="Escribe tu mensaje aquí..."></textarea>
-        </div>
+        <div class="form-group"><label>Para</label><input type="email" id="email-to" readonly style="background:#f5f5f5;color:#666"></div>
+        <div class="form-group"><label>Asunto *</label><input type="text" id="email-subject" placeholder="Cotizaci&oacute;n de servicios"></div>
+        <div class="form-group"><label>Mensaje *</label><textarea id="email-body" style="min-height:140px" placeholder="Escribe tu mensaje..."></textarea></div>
         <div class="modal-actions">
             <button class="btn btn-primary" onclick="enviarCorreo()">Enviar</button>
-            <button class="btn btn-cancel" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn btn-cancel" onclick="cerrarModal('modal-email')">Cancelar</button>
             <span id="email-msg"></span>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL SETTINGS -->
+<div class="modal-overlay" id="modal-settings">
+    <div class="modal">
+        <h3>&#9881; Configuraci&oacute;n</h3>
+        <div class="form-group">
+            <label>API Key de OpenAI</label>
+            <input type="password" id="openai-key" placeholder="sk-...">
+            <span class="file-hint">Se guarda solo en tu navegador (localStorage). Necesaria para la Captura IA.</span>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="guardarSettings()">Guardar</button>
+            <button class="btn btn-cancel" onclick="cerrarModal('modal-settings')">Cerrar</button>
+            <span id="settings-msg"></span>
         </div>
     </div>
 </div>
 
 <script>
 // ================================================
-// CONFIGURACIÓN — reemplaza con tu URL de Apps Script
+// CONFIGURACION — reemplaza con tu URL de Apps Script
 // ================================================
 const SCRIPT_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI';
 // ================================================
 
 let todosContactos = [];
+let datosIA = null;
+let micRecognition = null;
+let escuchando = false;
 
+// ---- TABS ----
 function showTab(tab, el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('panel-' + tab).classList.add('active');
+    if (tab === 'dashboard') cargarDashboard();
     if (tab === 'contactos') cargarContactos();
 }
 
+// ---- SETTINGS ----
+function abrirSettings() {
+    document.getElementById('openai-key').value = localStorage.getItem('openai_key') || '';
+    document.getElementById('settings-msg').innerHTML = '';
+    document.getElementById('modal-settings').classList.add('open');
+}
+function guardarSettings() {
+    const k = document.getElementById('openai-key').value.trim();
+    localStorage.setItem('openai_key', k);
+    document.getElementById('settings-msg').innerHTML = '<span class="msg msg-ok">&#10003; Guardado</span>';
+    setTimeout(() => cerrarModal('modal-settings'), 1200);
+}
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+// ---- DASHBOARD ----
+function parseMonto(s) {
+    if (!s) return 0;
+    const n = parseFloat(String(s).replace(/[^\d.]/g, ''));
+    return isNaN(n) ? 0 : n;
+}
+function fmtM(n) { return n.toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function calcStats(cs) {
+    const s = {total:cs.length,pipeline:0,
+        pendiente:{count:0,monto:0},aceptado:{count:0,monto:0},noAceptado:{count:0,monto:0},
+        staff21x:{count:0,monto:0},resility:{count:0,monto:0}};
+    cs.forEach(c => {
+        const m = parseMonto(c.cotizacion);
+        s.pipeline += m;
+        const est = c.estado || 'Pendiente';
+        if (est === 'Aceptado') { s.aceptado.count++; s.aceptado.monto += m; }
+        else if (est === 'No Aceptado') { s.noAceptado.count++; s.noAceptado.monto += m; }
+        else { s.pendiente.count++; s.pendiente.monto += m; }
+        const emp = (c.empresa||'').toLowerCase();
+        if (emp.includes('resility')) { s.resility.count++; s.resility.monto += m; }
+        else if (emp.includes('staff')) { s.staff21x.count++; s.staff21x.monto += m; }
+    });
+    return s;
+}
+
+function renderDashboard(s) {
+    document.getElementById('dash-content').innerHTML = `
+        <div class="dash-section">
+            <div class="dash-grid-2">
+                <div class="dash-card d-blue">
+                    <div class="dash-num">${s.total}</div>
+                    <div class="dash-lbl">Total Oportunidades</div>
+                </div>
+                <div class="dash-card d-blue">
+                    <div class="dash-num">S/. ${fmtM(s.pipeline)}</div>
+                    <div class="dash-lbl">Pipeline Total</div>
+                </div>
+            </div>
+        </div>
+        <div class="dash-section">
+            <div class="dash-grid-3">
+                <div class="dash-card d-yellow">
+                    <div class="dash-estado-lbl">&#128993; Pendiente</div>
+                    <div class="dash-num">${s.pendiente.count}</div>
+                    <div class="dash-monto">S/. ${fmtM(s.pendiente.monto)}</div>
+                </div>
+                <div class="dash-card d-green">
+                    <div class="dash-estado-lbl">&#9989; Aceptado</div>
+                    <div class="dash-num">${s.aceptado.count}</div>
+                    <div class="dash-monto">S/. ${fmtM(s.aceptado.monto)}</div>
+                </div>
+                <div class="dash-card d-red">
+                    <div class="dash-estado-lbl">&#10060; No Aceptado</div>
+                    <div class="dash-num">${s.noAceptado.count}</div>
+                    <div class="dash-monto">S/. ${fmtM(s.noAceptado.monto)}</div>
+                </div>
+            </div>
+        </div>
+        <div class="dash-section">
+            <div class="dash-grid-2">
+                <div class="dash-card d-blue">
+                    <div class="dash-emp-badge staff">Staff21x</div>
+                    <div class="dash-num">${s.staff21x.count}</div>
+                    <div class="dash-monto">S/. ${fmtM(s.staff21x.monto)}</div>
+                </div>
+                <div class="dash-card d-purple">
+                    <div class="dash-emp-badge resility">Resility</div>
+                    <div class="dash-num">${s.resility.count}</div>
+                    <div class="dash-monto">S/. ${fmtM(s.resility.monto)}</div>
+                </div>
+            </div>
+        </div>`;
+}
+
+async function cargarDashboard() {
+    document.getElementById('dash-content').innerHTML = '<div class="loading">Cargando...</div>';
+    try {
+        const res = await fetch(SCRIPT_URL + '?action=getContacts');
+        const json = await res.json();
+        renderDashboard(calcStats(json.contacts || []));
+    } catch {
+        document.getElementById('dash-content').innerHTML = '<div class="empty">Error al cargar. Verifica la URL del script.</div>';
+    }
+}
+// ---- EMPRESA SELECTOR ----
+function selEmpresaForm(btn) {
+    document.querySelectorAll('#panel-nuevo .empresa-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('empresa').value = btn.dataset.val;
+}
+function selEmpresaIA(btn) {
+    document.querySelectorAll('#panel-ia .empresa-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('ia-empresa').value = btn.dataset.val;
+}
+
 // ---- GUARDAR CONTACTO ----
+function getBase64(file) {
+    return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+    });
+}
+
 async function guardarContacto(e) {
     e.preventDefault();
-    const btn = document.getElementById('btn-guardar');
+    const empresa = document.getElementById('empresa').value;
     const msg = document.getElementById('form-msg');
-    btn.disabled = true;
-    btn.textContent = 'Guardando...';
-    msg.innerHTML = '';
-
+    if (!empresa) { msg.innerHTML = '<span class="msg msg-err">Selecciona una empresa.</span>'; return; }
+    const btn = document.getElementById('btn-guardar');
+    btn.disabled = true; btn.textContent = 'Guardando...'; msg.innerHTML = '';
+    const archivoInput = document.getElementById('archivo');
+    let fileData = null, fileName = null, mimeType = null;
+    if (archivoInput.files.length > 0) {
+        const file = archivoInput.files[0];
+        if (file.size > 10 * 1024 * 1024) {
+            msg.innerHTML = '<span class="msg msg-err">El archivo no puede superar 10 MB.</span>';
+            btn.disabled = false; btn.textContent = 'Guardar Contacto'; return;
+        }
+        btn.textContent = 'Subiendo archivo...';
+        fileData = await getBase64(file);
+        fileName = file.name; mimeType = file.type;
+    }
     const datos = {
-        action: 'addContact',
+        action:'addContact', empresa,
         nombre: document.getElementById('nombre').value.trim(),
         apellido: document.getElementById('apellido').value.trim(),
         correo: document.getElementById('correo').value.trim(),
         whatsapp: document.getElementById('whatsapp').value.trim(),
         requerimiento: document.getElementById('requerimiento').value.trim(),
         cotizacion: document.getElementById('cotizacion').value.trim(),
-        estado: document.getElementById('estado').value
+        estado: document.getElementById('estado').value,
+        fileData, fileName, mimeType
     };
-
     try {
-        const res = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify(datos)
-        });
+        const res = await fetch(SCRIPT_URL, {method:'POST', body:JSON.stringify(datos)});
         const json = await res.json();
         if (json.success) {
-            msg.innerHTML = '<span class="msg msg-ok">&#10003; Contacto guardado correctamente.</span>';
+            msg.innerHTML = '<span class="msg msg-ok">&#10003; Contacto guardado.</span>';
             e.target.reset();
-        } else {
-            throw new Error();
-        }
-    } catch {
-        msg.innerHTML = '<span class="msg msg-err">&#10007; Error al guardar. Verifica la URL del script.</span>';
-    }
-
-    btn.disabled = false;
-    btn.textContent = 'Guardar Contacto';
+            document.querySelectorAll('#panel-nuevo .empresa-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('empresa').value = '';
+        } else throw new Error();
+    } catch { msg.innerHTML = '<span class="msg msg-err">&#10007; Error al guardar. Verifica la URL del script.</span>'; }
+    btn.disabled = false; btn.textContent = 'Guardar Contacto';
 }
-
-// ---- CARGAR CONTACTOS ----
+// ---- CONTACTOS ----
 async function cargarContactos() {
-    const container = document.getElementById('tabla-container');
-    container.innerHTML = '<div class="loading">Cargando...</div>';
+    document.getElementById('tabla-container').innerHTML = '<div class="loading">Cargando...</div>';
     try {
         const res = await fetch(SCRIPT_URL + '?action=getContacts');
         const json = await res.json();
         todosContactos = (json.contacts || []).reverse();
-        renderTabla(todosContactos);
-    } catch {
-        container.innerHTML = '<div class="empty">Error al cargar. Verifica la URL del script.</div>';
-    }
+        aplicarFiltros();
+    } catch { document.getElementById('tabla-container').innerHTML = '<div class="empty">Error al cargar.</div>'; }
 }
 
-function renderTabla(contactos) {
-    const container = document.getElementById('tabla-container');
-    if (!contactos.length) {
-        container.innerHTML = '<div class="empty">No hay contactos registrados aún.</div>';
-        return;
-    }
+function aplicarFiltros() {
+    const q = (document.getElementById('search-input').value || '').toLowerCase();
+    const emp = document.getElementById('filtro-empresa').value;
+    renderTabla(todosContactos.filter(c => {
+        const mEmp = !emp || (c.empresa||'') === emp;
+        const mQ = !q || `${c.nombre} ${c.apellido} ${c.correo} ${c.empresa}`.toLowerCase().includes(q);
+        return mEmp && mQ;
+    }));
+}
 
-    const rows = contactos.map(c => {
-        const badgeClass = c.estado === 'Aceptado' ? 'badge-ok' :
-                           c.estado === 'No Aceptado' ? 'badge-no' : 'badge-pending';
-        const waBtnHtml = c.whatsapp
-            ? `<a href="https://wa.me/${c.whatsapp.replace(/[^0-9]/g,'')}" target="_blank" class="btn btn-sm btn-wa">WhatsApp</a>`
-            : '';
-
+function renderTabla(cs) {
+    const el = document.getElementById('tabla-container');
+    if (!cs.length) { el.innerHTML = '<div class="empty">No hay contactos que coincidan.</div>'; return; }
+    const rows = cs.map(c => {
+        const bc = c.estado==='Aceptado'?'badge-ok':c.estado==='No Aceptado'?'badge-no':'badge-pending';
+        const ec = (c.empresa||'').toLowerCase().includes('resility')?'emp-resility':'emp-staff';
+        const wa = c.whatsapp ? `<a href="https://wa.me/${c.whatsapp.replace(/[^0-9]/g,'')}" target="_blank" class="btn btn-sm btn-wa">WA</a>` : '';
+        const arch = c.archivo ? `<a href="${escA(c.archivo)}" target="_blank" class="btn btn-sm btn-archivo">&#128206;</a>` : '';
         return `<tr>
-            <td>${c.fecha || ''}</td>
-            <td><strong>${escHtml(c.nombre)} ${escHtml(c.apellido)}</strong></td>
-            <td>${escHtml(c.correo)}</td>
-            <td>${escHtml(c.whatsapp || '-')}</td>
-            <td class="req-cell" title="${escAttr(c.requerimiento)}">${escHtml(c.requerimiento || '')}</td>
-            <td>${escHtml(c.cotizacion || '-')}</td>
-            <td>
-                <select class="estado-select ${badgeClass}" onchange="cambiarEstado(${c.id}, this)">
-                    <option ${c.estado==='Pendiente'?'selected':''}>Pendiente</option>
-                    <option ${c.estado==='Aceptado'?'selected':''}>Aceptado</option>
-                    <option ${c.estado==='No Aceptado'?'selected':''}>No Aceptado</option>
-                </select>
-            </td>
-            <td>
-                <div class="actions">
-                    <button class="btn btn-sm btn-email" onclick="abrirEmail('${escAttr(c.correo)}','${escAttr(c.nombre)}')">Correo</button>
-                    ${waBtnHtml}
-                </div>
-            </td>
+            <td>${esc(c.fecha||'')}</td>
+            <td><span class="emp-badge ${ec}">${esc(c.empresa||'')}</span></td>
+            <td><strong>${esc(c.nombre)} ${esc(c.apellido||'')}</strong></td>
+            <td>${esc(c.correo||'')}</td>
+            <td>${esc(c.whatsapp||'-')}</td>
+            <td class="req-cell" title="${escA(c.requerimiento||'')}">${esc(c.requerimiento||'')}</td>
+            <td>${esc(c.cotizacion||'-')}</td>
+            <td><select class="estado-select ${bc}" onchange="cambiarEstado(${c.id},this)">
+                <option ${c.estado==='Pendiente'?'selected':''}>Pendiente</option>
+                <option ${c.estado==='Aceptado'?'selected':''}>Aceptado</option>
+                <option ${c.estado==='No Aceptado'?'selected':''}>No Aceptado</option>
+            </select></td>
+            <td><div class="actions">
+                <button class="btn btn-sm btn-email" onclick="abrirEmail('${escA(c.correo||'')}','${escA(c.nombre||'')}')">&#9993;</button>
+                ${wa}${arch}
+            </div></td>
         </tr>`;
     }).join('');
-
-    container.innerHTML = `
-        <table>
-            <thead><tr>
-                <th>Fecha</th><th>Nombre</th><th>Correo</th><th>WhatsApp</th>
-                <th>Requerimiento</th><th>Cotización</th><th>Estado</th><th>Acciones</th>
-            </tr></thead>
-            <tbody>${rows}</tbody>
-        </table>`;
+    el.innerHTML = `<table><thead><tr>
+        <th>Fecha</th><th>Empresa</th><th>Nombre</th><th>Correo</th>
+        <th>WhatsApp</th><th>Requerimiento</th><th>Cotizaci&oacute;n</th><th>Estado</th><th>Acciones</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-function filtrar(q) {
-    const t = q.toLowerCase();
-    renderTabla(todosContactos.filter(c =>
-        `${c.nombre} ${c.apellido} ${c.correo}`.toLowerCase().includes(t)
-    ));
-}
-
-// ---- CAMBIAR ESTADO ----
 async function cambiarEstado(rowId, sel) {
     const estado = sel.value;
-    sel.className = `estado-select ${
-        estado === 'Aceptado' ? 'badge-ok' :
-        estado === 'No Aceptado' ? 'badge-no' : 'badge-pending'
-    }`;
-    await fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'updateStatus', rowId, estado })
-    });
+    sel.className = `estado-select ${estado==='Aceptado'?'badge-ok':estado==='No Aceptado'?'badge-no':'badge-pending'}`;
+    await fetch(SCRIPT_URL, {method:'POST', body:JSON.stringify({action:'updateStatus', rowId, estado})});
+}
+// ---- CAPTURA IA ----
+function toggleVoz() { escuchando ? detenerVoz() : iniciarVoz(); }
+
+function iniciarVoz() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Tu navegador no soporta reconocimiento de voz.\nUsa Chrome en Android o Safari en iOS.'); return; }
+    micRecognition = new SR();
+    micRecognition.lang = 'es-PE';
+    micRecognition.continuous = true;
+    micRecognition.interimResults = true;
+    let finalText = document.getElementById('ia-texto').value;
+    micRecognition.onresult = (ev) => {
+        let interim = '';
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+            if (ev.results[i].isFinal) finalText += ev.results[i][0].transcript + ' ';
+            else interim = ev.results[i][0].transcript;
+        }
+        document.getElementById('ia-texto').value = finalText + interim;
+    };
+    micRecognition.onend = () => { escuchando = false; document.getElementById('btn-mic').textContent = '\u{1F3A4} Hablar'; document.getElementById('btn-mic').classList.remove('recording'); };
+    micRecognition.start();
+    escuchando = true;
+    const btn = document.getElementById('btn-mic');
+    btn.textContent = '\u23F9 Detener'; btn.classList.add('recording');
 }
 
+function detenerVoz() {
+    if (micRecognition) micRecognition.stop();
+    escuchando = false;
+    const btn = document.getElementById('btn-mic');
+    btn.textContent = '\u{1F3A4} Hablar'; btn.classList.remove('recording');
+}
+
+async function procesarConIA() {
+    const texto = document.getElementById('ia-texto').value.trim();
+    const empresaIA = document.getElementById('ia-empresa').value;
+    const msg = document.getElementById('ia-msg');
+    if (!texto) { msg.innerHTML = '<span class="msg msg-err">Escribe o dicta algo primero.</span>'; return; }
+    const apiKey = localStorage.getItem('openai_key');
+    if (!apiKey) { msg.innerHTML = '<span class="msg msg-err">&#9881; Primero configura tu API Key de OpenAI.</span>'; abrirSettings(); return; }
+    msg.innerHTML = '<span style="color:#888;font-size:.85rem">&#10024; Procesando con IA...</span>';
+    const prompt = `Eres un asistente de CRM. Extrae informacion de esta nota de un vendedor sobre una reunion.
+REGLAS: nombre/apellido son del CLIENTE externo. empresa es "${empresaIA||'Staff21x o Resility'}". requerimiento debe ser resumen claro de lo que necesita el cliente.
+Devuelve SOLO JSON valido con estos campos (null si no se encuentra):
+{"empresa":"Staff21x"|"Resility"|null,"nombre":null,"apellido":null,"correo":null,"whatsapp":null,"requerimiento":null,"cotizacion":null}
+Nota: "${texto.replace(/"/g,"'")}"`;
+    try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+            body: JSON.stringify({model:'gpt-4o-mini',messages:[{role:'user',content:prompt}],response_format:{type:'json_object'},max_tokens:500})
+        });
+        if (!res.ok) throw new Error(`Error OpenAI: ${res.status}`);
+        const data = await res.json();
+        datosIA = JSON.parse(data.choices[0].message.content);
+        if (empresaIA) datosIA.empresa = empresaIA;
+        msg.innerHTML = '<span class="msg msg-ok">&#10003; IA proces\u00f3 correctamente.</span>';
+        mostrarPreviewIA(datosIA);
+    } catch(err) { msg.innerHTML = `<span class="msg msg-err">Error: ${err.message}</span>`; }
+}
+
+function mostrarPreviewIA(d) {
+    const campos = [['Empresa',d.empresa],['Nombre',d.nombre],['Apellido',d.apellido],['Correo',d.correo],['WhatsApp',d.whatsapp],['Requerimiento',d.requerimiento],['Cotizaci\u00f3n',d.cotizacion]];
+    document.getElementById('ia-preview-content').innerHTML = campos.filter(r=>r[1]).map(r=>`<div class="preview-row"><span class="preview-key">${r[0]}</span><span>${esc(r[1])}</span></div>`).join('');
+    document.getElementById('ia-preview').style.display = 'block';
+}
+
+function llenarFormulario() {
+    if (!datosIA) return;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelector('[data-tab="nuevo"]').classList.add('active');
+    document.getElementById('panel-nuevo').classList.add('active');
+    if (datosIA.empresa) {
+        document.querySelectorAll('#panel-nuevo .empresa-btn').forEach(b => {
+            b.classList.remove('selected');
+            if (b.dataset.val === datosIA.empresa) b.classList.add('selected');
+        });
+        document.getElementById('empresa').value = datosIA.empresa || '';
+    }
+    ['nombre','apellido','correo','whatsapp','requerimiento','cotizacion'].forEach(k => {
+        if (datosIA[k]) document.getElementById(k).value = datosIA[k];
+    });
+    window.scrollTo(0,0);
+}
+
+function limpiarIA() {
+    datosIA = null;
+    document.getElementById('ia-texto').value = '';
+    document.getElementById('ia-preview').style.display = 'none';
+    document.getElementById('ia-msg').innerHTML = '';
+}
 // ---- EMAIL ----
 function abrirEmail(correo, nombre) {
     document.getElementById('email-to').value = correo;
@@ -448,50 +624,35 @@ function abrirEmail(correo, nombre) {
     document.getElementById('modal-email').classList.add('open');
 }
 
-function cerrarModal() {
-    document.getElementById('modal-email').classList.remove('open');
-}
-
 async function enviarCorreo() {
     const msg = document.getElementById('email-msg');
     const datos = {
-        action: 'sendEmail',
+        action:'sendEmail',
         to: document.getElementById('email-to').value,
         subject: document.getElementById('email-subject').value.trim(),
         body: document.getElementById('email-body').value.trim()
     };
-    if (!datos.subject || !datos.body) {
-        msg.innerHTML = '<span class="msg msg-err">Completa asunto y mensaje.</span>';
-        return;
-    }
-    msg.innerHTML = '<span style="color:#888;font-size:0.84rem">Enviando...</span>';
+    if (!datos.subject || !datos.body) { msg.innerHTML = '<span class="msg msg-err">Completa asunto y mensaje.</span>'; return; }
+    msg.innerHTML = '<span style="color:#888;font-size:.84rem">Enviando...</span>';
     try {
-        const res = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify(datos)
-        });
+        const res = await fetch(SCRIPT_URL, {method:'POST', body:JSON.stringify(datos)});
         const json = await res.json();
-        if (json.success) {
-            msg.innerHTML = '<span class="msg msg-ok">&#10003; Correo enviado.</span>';
-            setTimeout(cerrarModal, 1800);
-        } else throw new Error();
-    } catch {
-        msg.innerHTML = '<span class="msg msg-err">&#10007; Error al enviar.</span>';
-    }
+        if (json.success) { msg.innerHTML = '<span class="msg msg-ok">&#10003; Correo enviado.</span>'; setTimeout(()=>cerrarModal('modal-email'), 1800); }
+        else throw new Error();
+    } catch { msg.innerHTML = '<span class="msg msg-err">&#10007; Error al enviar.</span>'; }
 }
 
-// Helpers XSS-safe
-function escHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(s) {
-    return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
+// ---- UTILS ----
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-// Cerrar modal al hacer click fuera
-document.getElementById('modal-email').addEventListener('click', function(e) {
-    if (e.target === this) cerrarModal();
+// Cerrar modals al hacer click fuera
+['modal-email','modal-settings'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e){ if(e.target===this) cerrarModal(id); });
 });
+
+// Cargar dashboard al iniciar
+cargarDashboard();
 </script>
 </body>
 </html>
