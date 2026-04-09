@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Proyectos — Resility.io</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F9F8F5;--surface:#FFFFFF;--border:#E5E7EB;--border-light:#F3F4F6;
+  --text:#111827;--text2:#6B7280;--text3:#9CA3AF;
+  --amber:#F59E0B;--amber-bg:#FFFBEB;--amber-border:#FDE68A;--amber-text:#92400E;
+}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;min-height:100vh}
+
+.page{max-width:1160px;margin:0 auto;padding:0 24px 48px}
+.header{padding:28px 0 20px;border-bottom:1px solid var(--border);margin-bottom:28px}
+.header h1{font-size:18px;font-weight:700;letter-spacing:-0.02em}
+.header p{font-size:13px;color:var(--text2);margin-top:3px}
+
+.grid{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start}
+@media(max-width:760px){
+  .grid{grid-template-columns:1fr}
+  .page{padding:0 14px 220px}
+  .sidebar{position:fixed;bottom:0;left:0;right:0;z-index:100;border-radius:14px 14px 0 0;box-shadow:0 -2px 20px rgba(0,0,0,0.08);border-bottom:none!important}
+}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.card-head{padding:13px 18px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:9px}
+.num{width:22px;height:22px;background:var(--text);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-title{font-size:14px;font-weight:600}
+.card-tag{margin-left:auto;font-size:11px;color:var(--text3);font-weight:500}
+.note{padding:9px 18px;background:var(--amber-bg);border-bottom:1px solid var(--amber-border);font-size:12px;color:var(--amber-text);line-height:1.4}
+
+/* ROWS */
+.row{display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid var(--border-light)}
+.row:last-child{border-bottom:none}
+.row:hover{background:#FAFAFA}
+.row.disabled-section{opacity:.38;pointer-events:none}
+
+/* CHECKBOX */
+.cb-wrap{display:flex;align-items:center;gap:9px;cursor:pointer;flex:1;min-width:0}
+.cb-wrap input[type=checkbox]{width:15px;height:15px;border:1.5px solid #D1D5DB;border-radius:3px;appearance:none;-webkit-appearance:none;cursor:pointer;flex-shrink:0;position:relative;transition:background .1s,border-color .1s}
+.cb-wrap input[type=checkbox]:checked{background:var(--text);border-color:var(--text)}
+.cb-wrap input[type=checkbox]:checked::after{content:'';position:absolute;left:2px;top:-1px;width:6px;height:10px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg)}
+.cb-wrap input[type=checkbox]:disabled{background:var(--text);border-color:var(--text);opacity:.55;cursor:default}
+.cb-wrap input[type=checkbox]:disabled::after{content:'';position:absolute;left:2px;top:-1px;width:6px;height:10px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg)}
+.lbl{font-size:13.5px;color:var(--text);flex:1;min-width:0}
+.lbl-note{font-size:11px;color:var(--text3);margin-top:1px}
+.badge{font-size:11px;color:var(--text2);background:var(--border-light);padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+
+/* TOGGLE for section 4 */
+.sec-toggle input[type=checkbox]{width:15px;height:15px;border:1.5px solid var(--amber-border);border-radius:3px;appearance:none;-webkit-appearance:none;cursor:pointer;position:relative;transition:background .1s}
+.sec-toggle input[type=checkbox]:checked{background:var(--amber);border-color:var(--amber)}
+.sec-toggle input[type=checkbox]:checked::after{content:'';position:absolute;left:2px;top:-1px;width:6px;height:10px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg)}
+.sec-toggle{display:flex;align-items:center;gap:5px;margin-left:auto;cursor:pointer;font-size:12px;color:var(--text2)}
+
+/* INPUTS */
+.qty{width:54px;height:28px;border:1px solid var(--border);border-radius:6px;padding:0 6px;font-size:13px;text-align:center;font-family:inherit;color:var(--text);background:var(--surface)}
+.qty:focus{outline:none;border-color:var(--amber)}
+.hrs{width:64px;height:28px;border:1px solid var(--border);border-radius:6px;padding:0 6px;font-size:13px;text-align:center;font-family:inherit;color:var(--text);background:var(--surface)}
+.hrs:focus{outline:none;border-color:var(--amber)}
+.input-grp{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.input-grp span{font-size:12px;color:var(--text2);white-space:nowrap}
+.infra-cost{font-size:12px;color:var(--text2);white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:sticky;top:20px}
+.sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:14px}
+.res-item{margin-bottom:14px}
+.res-lbl{font-size:11px;color:var(--text2);margin-bottom:1px}
+.res-val{font-size:26px;font-weight:700;letter-spacing:-0.03em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.1}
+.res-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+.infra-box{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:7px;padding:10px 12px;margin-bottom:14px}
+.infra-lbl{font-size:11px;color:var(--amber-text);font-weight:600;margin-bottom:2px}
+.infra-val{font-size:20px;font-weight:700;color:var(--amber-text);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.infra-sub{font-size:11px;color:#B45309;margin-top:1px}
+
+.btn-gen{width:100%;padding:11px;background:var(--text);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.01em;transition:opacity .1s}
+.btn-gen:hover{opacity:.82}
+.btn-gen:active{opacity:.65}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:10px;max-width:580px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h2{font-size:15px;font-weight:600}
+.btn-close{background:none;border:none;font-size:20px;line-height:1;color:var(--text2);cursor:pointer;padding:2px 6px}
+.modal-body{padding:18px;overflow-y:auto;flex:1}
+.summary-pre{font-family:'Courier New',monospace;font-size:12.5px;white-space:pre-wrap;color:var(--text);background:#F9FAFB;border:1px solid var(--border);border-radius:7px;padding:14px;line-height:1.65}
+.modal-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;flex-direction:column}
+.btn-copy{padding:10px;background:var(--text);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .1s}
+.btn-copy:hover{opacity:.82}
+.btn-cerrar{padding:9px;background:none;color:var(--text2);border:1px solid var(--border);border-radius:7px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn-cerrar:hover{background:var(--border-light)}
+.copy-ok{font-size:12px;color:var(--amber-text);font-weight:600;text-align:center;display:none;padding:4px 0 2px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>Resility.io — Calculadora de Proyectos</h1>
+    <p>Herramienta interna · Tarifa $1.600 CLP / hora · Costo de desarrollo en pesos chilenos</p>
+  </div>
+
+  <div class="grid">
+    <div class="main-col">
+
+      <!-- S1 CANALES -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">1</div>
+          <span class="card-title">Canales</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c1_wa" onchange="calc()"><div><div class="lbl">WhatsApp Business (Meta Cloud API)</div></div></label>
+            <span class="badge">0,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c1_email" onchange="calc()"><div><div class="lbl">Email entrada y salida</div></div></label>
+            <span class="badge">1 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c1_voz" onchange="calc()"><div><div class="lbl">Voz / llamadas telefónicas (Twilio + TTS)</div></div></label>
+            <span class="badge">1,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c1_chat" onchange="calc()"><div><div class="lbl">Chat embebido en sitio web</div></div></label>
+            <span class="badge">1 hr</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- S2 INTEGRACIONES -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">2</div>
+          <span class="card-title">Integraciones / APIs</span>
+        </div>
+        <div class="note">Esto es conexión de API solamente — autenticación, endpoint, prueba. No incluye diseño de flujos ni configuración dentro del sistema del cliente.</div>
+        <div class="card-body">
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_openai" onchange="calc()"><div class="lbl">OpenAI / Claude API</div></label>
+            <span class="badge">0,25 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_meta" onchange="calc()"><div class="lbl">Meta WhatsApp Business API</div></label>
+            <span class="badge">0,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_crm" onchange="calc()"><div class="lbl">CRM (HubSpot / Zoho / Salesforce)</div></label>
+            <span class="badge">1 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_gcal" onchange="calc()"><div class="lbl">Google Calendar / Outlook</div></label>
+            <span class="badge">0,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_gsheets" onchange="calc()"><div class="lbl">Google Sheets / Drive</div></label>
+            <span class="badge">0,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_db" onchange="calc()"><div class="lbl">Base de datos externa del cliente</div></label>
+            <span class="badge">1,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_erp" onchange="calc()"><div class="lbl">ERP (SAP, Odoo u otro)</div></label>
+            <span class="badge">1,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_custom" onchange="calc()"><div class="lbl">API custom del cliente (sin documentación estándar)</div></label>
+            <span class="badge">2 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_twilio" onchange="calc()"><div class="lbl">Twilio (voz)</div></label>
+            <span class="badge">0,5 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="c2_eleven" onchange="calc()"><div class="lbl">ElevenLabs (voz sintética)</div></label>
+            <span class="badge">0,5 hr</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- S3 ENTRENAMIENTO -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">3</div>
+          <span class="card-title">Entrenamiento del agente</span>
+        </div>
+        <div class="note">Acá vive la complejidad real. Cada prompt es prueba y error. No subestimar estas horas.</div>
+        <div class="card-body">
+          <div class="row">
+            <div style="flex:1;min-width:0"><div class="lbl">Prompt de sistema (identidad, rol, límites)</div></div>
+            <div class="input-grp"><span>hrs</span><input type="number" class="hrs" id="c3_prompt" value="3" min="0" step="0.5" oninput="calc()"></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;min-width:0">
+              <div class="lbl">Contexto del ecosistema del cliente</div>
+              <div class="lbl-note">Productos, tarifas, procesos, vocabulario · Consume tokens durante la construcción.</div>
+            </div>
+            <div class="input-grp"><span>hrs</span><input type="number" class="hrs" id="c3_ctx" value="4" min="0" step="0.5" oninput="calc()"></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;min-width:0"><div class="lbl">Casos de uso principales</div><div class="lbl-note">× 1 hr c/u</div></div>
+            <div class="input-grp"><span>cant.</span><input type="number" class="qty" id="c3_casos" value="0" min="0" oninput="calc()"></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;min-width:0"><div class="lbl">Edge cases y respuestas difíciles</div><div class="lbl-note">× 0,5 hr c/u</div></div>
+            <div class="input-grp"><span>cant.</span><input type="number" class="qty" id="c3_edge" value="0" min="0" oninput="calc()"></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;min-width:0">
+              <div class="lbl">Rondas de refinamiento post-pruebas</div>
+              <div class="lbl-note">× 3 hrs c/u · Una ronda = pruebas completas + correcciones + re-prueba.</div>
+            </div>
+            <div class="input-grp"><span>cant.</span><input type="number" class="qty" id="c3_rondas" value="0" min="0" oninput="calc()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S4 DATOS Y ANALYTICS -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">4</div>
+          <span class="card-title">Datos y analytics</span>
+          <label class="sec-toggle">
+            <input type="checkbox" id="s4_on" onchange="toggleS4()">
+            Activar sección
+          </label>
+        </div>
+        <div id="s4_body">
+          <div class="row disabled-section" id="s4_row_fuentes">
+            <div style="flex:1;min-width:0"><div class="lbl">Conexión y normalización de fuentes de datos</div><div class="lbl-note">× 4 hrs c/u</div></div>
+            <div class="input-grp"><span>fuentes</span><input type="number" class="qty" id="c4_fuentes" value="0" min="0" oninput="calc()"></div>
+          </div>
+          <div class="row disabled-section" id="s4_row_kpis">
+            <div style="flex:1;min-width:0"><div class="lbl">KPIs y métricas calculadas</div><div class="lbl-note">× 1 hr c/u</div></div>
+            <div class="input-grp"><span>cant.</span><input type="number" class="qty" id="c4_kpis" value="0" min="0" oninput="calc()"></div>
+          </div>
+          <div class="row disabled-section" id="s4_row_paneles">
+            <div style="flex:1;min-width:0"><div class="lbl">Paneles / dashboards</div><div class="lbl-note">× 4 hrs c/u</div></div>
+            <div class="input-grp"><span>paneles</span><input type="number" class="qty" id="c4_paneles" value="0" min="0" oninput="calc()"></div>
+          </div>
+          <div class="row disabled-section" id="s4_row_alertas">
+            <label class="cb-wrap"><input type="checkbox" id="c4_alertas" onchange="calc()"><div class="lbl">Sistema de alertas automáticas</div></label>
+            <span class="badge">3 hr</span>
+          </div>
+          <div class="row disabled-section" id="s4_row_export">
+            <label class="cb-wrap"><input type="checkbox" id="c4_export" onchange="calc()"><div class="lbl">Exportación de reportes Excel/CSV</div></label>
+            <span class="badge">1,5 hr</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- S5 TAREAS FIJAS -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">5</div>
+          <span class="card-title">Tareas fijas</span>
+          <span class="card-tag">Siempre incluidas</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <label class="cb-wrap" style="cursor:default"><input type="checkbox" checked disabled><div class="lbl">Diseño de arquitectura técnica</div></label>
+            <span class="badge">3 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap" style="cursor:default"><input type="checkbox" checked disabled><div class="lbl">Despliegue en producción (Railway, variables de entorno, dominio)</div></label>
+            <span class="badge">2 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap" style="cursor:default"><input type="checkbox" checked disabled><div style="flex:1;min-width:0"><div class="lbl">Testing</div><div class="lbl-note">× 1,5 hr c/u</div></div></label>
+            <div class="input-grp"><span>flujos</span><input type="number" class="qty" id="c5_testing" value="3" min="0" oninput="calc()"></div>
+          </div>
+          <div class="row">
+            <label class="cb-wrap" style="cursor:default"><input type="checkbox" checked disabled><div class="lbl">Control de errores y casos límite técnicos</div></label>
+            <span class="badge">3 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap" style="cursor:default"><input type="checkbox" checked disabled><div class="lbl">Documentación interna del desarrollo</div></label>
+            <span class="badge">2 hr</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap" style="cursor:default"><input type="checkbox" checked disabled><div style="flex:1;min-width:0"><div class="lbl">Capacitación al cliente</div><div class="lbl-note">× 1,5 hr c/u</div></div></label>
+            <div class="input-grp"><span>sesiones</span><input type="number" class="qty" id="c5_cap" value="1" min="0" oninput="calc()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S6 INFRAESTRUCTURA -->
+      <div class="card">
+        <div class="card-head">
+          <div class="num">6</div>
+          <span class="card-title">Infraestructura mensual</span>
+        </div>
+        <div class="note">Estos costos van aparte. No se suman al desarrollo. Se informan al cliente como cargo mensual separado.</div>
+        <div class="card-body">
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_tokens" data-cost="72000" onchange="calc()"><div class="lbl">Claude / OpenAI tokens producción</div></label>
+            <span class="infra-cost">$72.000/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_railway" data-cost="13500" onchange="calc()"><div class="lbl">Railway servidor</div></label>
+            <span class="infra-cost">$13.500/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_supabase" data-cost="22500" onchange="calc()"><div class="lbl">Base de datos Supabase</div></label>
+            <span class="infra-cost">$22.500/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_waba" data-cost="27000" onchange="calc()"><div class="lbl">WhatsApp Business API (Meta)</div></label>
+            <span class="infra-cost">$27.000/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_twilio" data-cost="36000" onchange="calc()"><div class="lbl">Twilio voz</div></label>
+            <span class="infra-cost">$36.000/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_n8n" data-cost="18000" onchange="calc()"><div class="lbl">n8n automatizaciones</div></label>
+            <span class="infra-cost">$18.000/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_crm" data-cost="45000" onchange="calc()"><div class="lbl">CRM externo</div></label>
+            <span class="infra-cost">$45.000/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_eleven" data-cost="19800" onchange="calc()"><div class="lbl">ElevenLabs TTS</div></label>
+            <span class="infra-cost">$19.800/mes</span>
+          </div>
+          <div class="row">
+            <label class="cb-wrap"><input type="checkbox" id="i_cf" data-cost="4500" onchange="calc()"><div class="lbl">Cloudflare / dominio</div></label>
+            <span class="infra-cost">$4.500/mes</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-col -->
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Resumen en tiempo real</div>
+      <div class="res-item">
+        <div class="res-lbl">Total horas estimadas</div>
+        <div class="res-val" id="out-hrs">0</div>
+        <div class="res-sub">horas</div>
+      </div>
+      <hr class="divider">
+      <div class="res-item">
+        <div class="res-lbl">Costo interno total</div>
+        <div class="res-val" id="out-cost">$0</div>
+        <div class="res-sub">a $1.600 CLP / hr</div>
+      </div>
+      <hr class="divider">
+      <div class="infra-box">
+        <div class="infra-lbl">Infraestructura mensual (aparte)</div>
+        <div class="infra-val" id="out-infra">$0</div>
+        <div class="infra-sub">CLP / mes · cargo separado al cliente</div>
+      </div>
+      <button class="btn-gen" onclick="openModal()">Generar resumen</button>
+    </aside>
+
+  </div><!-- /grid -->
+</div><!-- /page -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Resumen del proyecto</h2>
+      <button class="btn-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <pre class="summary-pre" id="summary-out"></pre>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-copy" onclick="copySummary()">Copiar al portapapeles</button>
+      <button class="btn-cerrar" onclick="closeModal()">Cerrar</button>
+      <div class="copy-ok" id="copy-ok">Copiado al portapapeles</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const RATE = 1600;
+let _hrs = 0, _infra = 0;
+
+function n(id){ const e=document.getElementById(id); if(!e)return 0; return e.type==='checkbox'?(e.checked?1:0):(parseFloat(e.value)||0); }
+
+function fh(v){
+  if(v===0)return'0';
+  let s=v.toFixed(2).replace(/\.?0+$/,'');
+  return s.replace('.',',');
+}
+
+function fm(v){ return v.toLocaleString('es-CL'); }
+
+function toggleS4(){
+  const on=document.getElementById('s4_on').checked;
+  ['s4_row_fuentes','s4_row_kpis','s4_row_paneles','s4_row_alertas','s4_row_export'].forEach(id=>{
+    document.getElementById(id).classList.toggle('disabled-section',!on);
+  });
+  calc();
+}
+
+function s4hrs(){
+  if(!document.getElementById('s4_on').checked)return 0;
+  return n('c4_fuentes')*4 + n('c4_kpis')*1 + n('c4_paneles')*4 + n('c4_alertas')*3 + n('c4_export')*1.5;
+}
+
+function calc(){
+  let h=0;
+  // S1
+  h+=n('c1_wa')*0.5+n('c1_email')*1+n('c1_voz')*1.5+n('c1_chat')*1;
+  // S2
+  h+=n('c2_openai')*0.25+n('c2_meta')*0.5+n('c2_crm')*1+n('c2_gcal')*0.5+n('c2_gsheets')*0.5;
+  h+=n('c2_db')*1.5+n('c2_erp')*1.5+n('c2_custom')*2+n('c2_twilio')*0.5+n('c2_eleven')*0.5;
+  // S3
+  h+=n('c3_prompt')+n('c3_ctx')+n('c3_casos')*1+n('c3_edge')*0.5+n('c3_rondas')*3;
+  // S4
+  h+=s4hrs();
+  // S5 always
+  h+=3+2+n('c5_testing')*1.5+3+2+n('c5_cap')*1.5;
+  // Infra
+  let inf=0;
+  document.querySelectorAll('[data-cost]').forEach(el=>{ if(el.checked)inf+=parseInt(el.dataset.cost); });
+  _hrs=h; _infra=inf;
+  document.getElementById('out-hrs').textContent=fh(h);
+  document.getElementById('out-cost').textContent='$'+fm(Math.round(h*RATE));
+  document.getElementById('out-infra').textContent='$'+fm(inf);
+}
+
+function buildSummary(){
+  const d=new Date().toLocaleDateString('es-CL');
+  const L=[];
+  L.push('RESILITY.IO — ESTIMACIÓN DE PROYECTO');
+  L.push('Fecha: '+d);
+  L.push('Tarifa interna: $1.600 CLP/hr');
+  L.push('');
+
+  // S1
+  const s1=[
+    ['c1_wa','WhatsApp Business (Meta Cloud API)',0.5],
+    ['c1_email','Email entrada y salida',1],
+    ['c1_voz','Voz / llamadas telefónicas (Twilio + TTS)',1.5],
+    ['c1_chat','Chat embebido en sitio web',1],
+  ];
+  let s1h=0,s1l=[];
+  s1.forEach(([id,lbl,h])=>{ if(n(id)){s1l.push('  · '+lbl+' ('+fh(h)+' hr)');s1h+=h;} });
+  if(s1l.length){L.push('── CANALES  '+fh(s1h)+' hrs');s1l.forEach(x=>L.push(x));L.push('');}
+
+  // S2
+  const s2=[
+    ['c2_openai','OpenAI / Claude API',0.25],['c2_meta','Meta WhatsApp Business API',0.5],
+    ['c2_crm','CRM (HubSpot / Zoho / Salesforce)',1],['c2_gcal','Google Calendar / Outlook',0.5],
+    ['c2_gsheets','Google Sheets / Drive',0.5],['c2_db','Base de datos externa del cliente',1.5],
+    ['c2_erp','ERP (SAP, Odoo u otro)',1.5],['c2_custom','API custom del cliente (sin doc. estándar)',2],
+    ['c2_twilio','Twilio (voz)',0.5],['c2_eleven','ElevenLabs (voz sintética)',0.5],
+  ];
+  let s2h=0,s2l=[];
+  s2.forEach(([id,lbl,h])=>{ if(n(id)){s2l.push('  · '+lbl+' ('+fh(h)+' hr)');s2h+=h;} });
+  if(s2l.length){L.push('── INTEGRACIONES / APIs  '+fh(s2h)+' hrs');s2l.forEach(x=>L.push(x));L.push('');}
+
+  // S3
+  let s3h=0,s3l=[];
+  const p=n('c3_prompt'),cx=n('c3_ctx'),cas=n('c3_casos'),ed=n('c3_edge'),ro=n('c3_rondas');
+  if(p){s3l.push('  · Prompt de sistema ('+fh(p)+' hrs)');s3h+=p;}
+  if(cx){s3l.push('  · Contexto del ecosistema ('+fh(cx)+' hrs)');s3h+=cx;}
+  if(cas){const hh=cas*1;s3l.push('  · Casos de uso principales ('+cas+' × 1 hr = '+fh(hh)+' hrs)');s3h+=hh;}
+  if(ed){const hh=ed*0.5;s3l.push('  · Edge cases ('+ed+' × 0,5 hr = '+fh(hh)+' hrs)');s3h+=hh;}
+  if(ro){const hh=ro*3;s3l.push('  · Rondas de refinamiento ('+ro+' × 3 hrs = '+fh(hh)+' hrs)');s3h+=hh;}
+  if(s3l.length){L.push('── ENTRENAMIENTO DEL AGENTE  '+fh(s3h)+' hrs');s3l.forEach(x=>L.push(x));L.push('');}
+
+  // S4
+  if(document.getElementById('s4_on').checked){
+    let s4h=0,s4l=[];
+    const fu=n('c4_fuentes'),kp=n('c4_kpis'),pa=n('c4_paneles');
+    if(fu){const hh=fu*4;s4l.push('  · Fuentes de datos ('+fu+' × 4 hrs = '+fh(hh)+' hrs)');s4h+=hh;}
+    if(kp){const hh=kp*1;s4l.push('  · KPIs y métricas ('+kp+' × 1 hr = '+fh(hh)+' hrs)');s4h+=hh;}
+    if(pa){const hh=pa*4;s4l.push('  · Paneles / dashboards ('+pa+' × 4 hrs = '+fh(hh)+' hrs)');s4h+=hh;}
+    if(n('c4_alertas')){s4l.push('  · Sistema de alertas automáticas (3 hrs)');s4h+=3;}
+    if(n('c4_export')){s4l.push('  · Exportación reportes Excel/CSV (1,5 hrs)');s4h+=1.5;}
+    if(s4l.length){L.push('── DATOS Y ANALYTICS  '+fh(s4h)+' hrs');s4l.forEach(x=>L.push(x));L.push('');}
+  }
+
+  // S5
+  let s5h=0,s5l=[];
+  s5l.push('  · Diseño de arquitectura técnica (3 hrs)');s5h+=3;
+  s5l.push('  · Despliegue en producción (2 hrs)');s5h+=2;
+  const te=n('c5_testing'),teh=te*1.5;
+  s5l.push('  · Testing ('+te+' flujos × 1,5 hr = '+fh(teh)+' hrs)');s5h+=teh;
+  s5l.push('  · Control de errores y casos límite (3 hrs)');s5h+=3;
+  s5l.push('  · Documentación interna (2 hrs)');s5h+=2;
+  const ca=n('c5_cap'),cah=ca*1.5;
+  s5l.push('  · Capacitación al cliente ('+ca+' sesiones × 1,5 hr = '+fh(cah)+' hrs)');s5h+=cah;
+  L.push('── TAREAS FIJAS  '+fh(s5h)+' hrs');s5l.forEach(x=>L.push(x));L.push('');
+
+  // Totales
+  L.push('──────────────────────────────────────');
+  L.push('TOTAL HORAS: '+fh(_hrs)+' hrs');
+  L.push('COSTO INTERNO: $'+fm(Math.round(_hrs*RATE))+' CLP');
+  L.push('');
+
+  // S6
+  const s6=[
+    ['i_tokens','Claude / OpenAI tokens producción',72000],
+    ['i_railway','Railway servidor',13500],
+    ['i_supabase','Base de datos Supabase',22500],
+    ['i_waba','WhatsApp Business API (Meta)',27000],
+    ['i_twilio','Twilio voz',36000],
+    ['i_n8n','n8n automatizaciones',18000],
+    ['i_crm','CRM externo',45000],
+    ['i_eleven','ElevenLabs TTS',19800],
+    ['i_cf','Cloudflare / dominio',4500],
+  ];
+  let s6l=[],s6t=0;
+  s6.forEach(([id,lbl,c])=>{ const e=document.getElementById(id); if(e&&e.checked){s6l.push('  · '+lbl+': $'+fm(c)+'/mes');s6t+=c;} });
+  if(s6l.length){
+    L.push('── INFRAESTRUCTURA MENSUAL (cargo separado al cliente)');
+    s6l.forEach(x=>L.push(x));
+    L.push('  TOTAL MENSUAL: $'+fm(s6t)+' CLP/mes');
+  }
+
+  return L.join('\n');
+}
+
+function openModal(){
+  document.getElementById('summary-out').textContent=buildSummary();
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+function overlayClick(e){ if(e.target===document.getElementById('overlay'))closeModal(); }
+function copySummary(){
+  const txt=document.getElementById('summary-out').textContent;
+  const ok=()=>{ const el=document.getElementById('copy-ok');el.style.display='block';setTimeout(()=>el.style.display='none',2200); };
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(ok).catch(fallback);}else{fallback();}
+  function fallback(){const t=document.createElement('textarea');t.value=txt;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);ok();}
+}
+
+calc();
+</script>
+</body>
+</html>
