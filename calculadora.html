@@ -29,7 +29,7 @@
     main {
       max-width: 720px;
       margin: 40px auto;
-      padding: 0 24px;
+      padding: 0 24px 40px;
     }
 
     .section {
@@ -269,6 +269,89 @@
       font-weight: 600;
       color: #c0c8e8;
     }
+
+    /* Sección 0 — Carga de archivo */
+    .upload-zone {
+      border: 2px dashed #c0c4e0;
+      border-radius: 10px;
+      padding: 36px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #fafbff;
+    }
+
+    .upload-zone.drag-over {
+      border-color: #4a6cf7;
+      background: #eef1fd;
+    }
+
+    .upload-text {
+      font-size: 1rem;
+      color: #6b6b9a;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      padding: 10px 24px;
+      background: #4a6cf7;
+      color: #ffffff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.15s;
+      pointer-events: none;
+    }
+
+    .upload-zone:hover .upload-btn,
+    .upload-zone.drag-over .upload-btn { background: #3a5ce6; }
+
+    #file-input { display: none; }
+
+    .detection-result {
+      margin-top: 16px;
+      padding: 14px 18px;
+      background: #fffbea;
+      border: 1.5px solid #f0c040;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      color: #7a5a00;
+      line-height: 1.6;
+    }
+
+    /* Botón y área de resumen */
+    .summary-btn {
+      width: 100%;
+      padding: 11px 20px;
+      background: #4a6cf7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .summary-btn:hover { background: #3a5ce6; }
+
+    .summary-output {
+      width: 100%;
+      margin-top: 16px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      background: #ffffff;
+      border: 1.5px solid #d0d4e8;
+      border-radius: 10px;
+      resize: vertical;
+      color: #1a1a2e;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    }
   </style>
 </head>
 <body>
@@ -278,7 +361,17 @@
   </header>
 
   <main>
-    <div class="section">
+    <div class="section" id="s0">
+      <h2>Sección 0 — Análisis del demo</h2>
+      <div class="upload-zone" id="upload-zone">
+        <p class="upload-text">Subí el HTML del demo del cliente para pre-completar la estimación</p>
+        <span class="upload-btn">Seleccionar archivo</span>
+        <input type="file" id="file-input" accept=".html,.htm" />
+      </div>
+      <div class="detection-result" id="detection-result" hidden></div>
+    </div>
+
+    <div class="section" id="s1">
       <h2>Sección 1 — Canales</h2>
 
       <div class="item">
@@ -314,7 +407,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" id="s2">
       <h2>Sección 2 — Integraciones / APIs</h2>
       <p class="section-note">Conexión de API solamente — autenticación, endpoint, prueba. Las APIs del ecosistema del cliente las gestiona el cliente.</p>
 
@@ -399,7 +492,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" id="s3">
       <h2>Sección 3 — Entrenamiento del agente</h2>
       <p class="section-note">Acá vive la complejidad real. Cada prompt es prueba y error. No subestimar estas horas.</p>
 
@@ -456,7 +549,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" id="s4">
       <div class="section-header">
         <h2>Sección 4 — Datos y analytics</h2>
         <label class="toggle-switch">
@@ -508,7 +601,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" id="s5">
       <h2>Sección 5 — Tareas fijas</h2>
       <p class="section-note">Siempre van incluidas en todo proyecto. No se pueden quitar.</p>
 
@@ -561,7 +654,7 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" id="s6">
       <h2>Sección 6 — Infraestructura mensual</h2>
       <p class="section-note">Estos costos van aparte. No se suman al costo de desarrollo.</p>
 
@@ -669,71 +762,257 @@
         <span class="total-sublabel">Infra mensual — Cliente</span>
         <span class="total-subvalue" id="infra-b-display">$0 CLP/mes</span>
       </div>
+      <hr class="total-sep" />
+      <div class="total-row">
+        <button id="btn-summary" class="summary-btn">Generar resumen</button>
+      </div>
     </div>
+    <textarea id="summary-output" class="summary-output" hidden rows="24" readonly></textarea>
   </main>
 
   <script>
-    const HRS_RATE = 1600; // CLP por hora
+    const HRS_RATE = 1600;
+    let uploadedFileName = '';
 
+    // ─── Reglas de detección para análisis de HTML ────────────────
+    const DETECTION_RULES = [
+      { keywords: ['whatsapp', 'wsp', 'meta'],        apply: () => check('ch-whatsapp'),                        label: 'WhatsApp Business (Sección 1)' },
+      { keywords: ['email', 'correo'],                apply: () => check('ch-email'),                           label: 'Email (Sección 1)' },
+      { keywords: ['voz', 'twilio', 'llamada'],       apply: () => check('ch-voz'),                             label: 'Voz/llamadas (Sección 1)' },
+      { keywords: ['webchat', 'widget'],              apply: () => check('ch-chat'),                            label: 'Chat web (Sección 1)' },
+      { keywords: ['dashboard', 'kpi'],               apply: () => activateS4(),                                label: 'Sección 4 activada (Datos y analytics)' },
+      { keywords: ['crm', 'hubspot', 'salesforce'],   apply: () => check('int-crm'),                            label: 'CRM (Sección 2)' },
+      { keywords: ['alerta', 'alert'],                apply: () => { activateS4(); check('s4-alertas'); },      label: 'Alertas automáticas (Sección 4)' },
+      { keywords: ['sheets', 'excel'],                apply: () => { activateS4(); check('s4-export'); },       label: 'Exportación Excel/CSV (Sección 4)' },
+      { keywords: ['elevenlabs'],                     apply: () => check('int-elevenlabs'),                     label: 'ElevenLabs (Sección 2)' },
+      { keywords: ['cobranza', 'pago'],               apply: () => increment('train-rondas', 1),                label: '+1 ronda de refinamiento (Sección 3)' },
+    ];
+
+    function check(id) {
+      const el = document.getElementById(id);
+      if (el && !el.checked) el.checked = true;
+    }
+
+    function activateS4() {
+      const toggle = document.getElementById('toggle-s4');
+      if (!toggle.checked) {
+        toggle.checked = true;
+        document.getElementById('s4-body').hidden = false;
+      }
+    }
+
+    function increment(id, amount) {
+      const el = document.getElementById(id);
+      if (el) el.value = (parseFloat(el.value) || 0) + amount;
+    }
+
+    // ─── Formato ──────────────────────────────────────────────────
     function formatCLP(n) {
       return '$' + n.toLocaleString('es-CL') + ' CLP';
     }
 
+    // ─── Cálculo en tiempo real ───────────────────────────────────
     function recalculate() {
-      let totalHrs = 0;
-      let infraA = 0;
-      let infraB = 0;
+      let totalHrs = 0, infraA = 0, infraB = 0;
       const s4Active = document.getElementById('toggle-s4').checked;
 
-      // Secciones 1 y 2: checkboxes (excluir S4)
       document.querySelectorAll('input[type="checkbox"][data-hrs]').forEach(cb => {
         if (cb.closest('#s4-body')) return;
         if (cb.checked) totalHrs += parseFloat(cb.dataset.hrs);
       });
 
-      // Sección 3: horas libres (valor directo)
       document.querySelectorAll('input[data-type="free"]').forEach(inp => {
         totalHrs += parseFloat(inp.value) || 0;
       });
 
-      // Sección 3: cantidad × tarifa fija (excluir S4)
       document.querySelectorAll('input[data-type="qty"]').forEach(inp => {
         if (inp.closest('#s4-body')) return;
-        const qty = parseFloat(inp.value) || 0;
-        const rate = parseFloat(inp.dataset.rate) || 0;
-        totalHrs += qty * rate;
+        totalHrs += (parseFloat(inp.value) || 0) * (parseFloat(inp.dataset.rate) || 0);
       });
 
-      // Sección 4: solo si el toggle está activado
       if (s4Active) {
         document.querySelectorAll('#s4-body input[type="checkbox"][data-hrs]').forEach(cb => {
           if (cb.checked) totalHrs += parseFloat(cb.dataset.hrs);
         });
         document.querySelectorAll('#s4-body input[data-type="qty"]').forEach(inp => {
-          const qty = parseFloat(inp.value) || 0;
-          const rate = parseFloat(inp.dataset.rate) || 0;
-          totalHrs += qty * rate;
+          totalHrs += (parseFloat(inp.value) || 0) * (parseFloat(inp.dataset.rate) || 0);
         });
       }
 
-      // Sección 6A: subtotal infraestructura Resility (no suma a horas)
       document.querySelectorAll('#s6a input[type="checkbox"][data-clp]').forEach(cb => {
         if (cb.checked) infraA += parseFloat(cb.dataset.clp) || 0;
       });
-
-      // Sección 6B: subtotal infraestructura cliente (no suma a horas)
       document.querySelectorAll('#s6b input[type="checkbox"][data-clp]').forEach(cb => {
         if (cb.checked) infraB += parseFloat(cb.dataset.clp) || 0;
       });
 
       const totalCLP = Math.round(totalHrs * HRS_RATE);
       const hrsLabel = totalHrs === 1 ? '1 hr' : totalHrs + ' hrs';
-      document.getElementById('total-display').textContent =
-        hrsLabel + ' / ' + formatCLP(totalCLP);
+      document.getElementById('total-display').textContent = hrsLabel + ' / ' + formatCLP(totalCLP);
       document.getElementById('infra-a-display').textContent = formatCLP(infraA) + '/mes';
       document.getElementById('infra-b-display').textContent = formatCLP(infraB) + '/mes';
     }
 
+    // ─── Análisis de archivo HTML ─────────────────────────────────
+    function analyzeFile(text) {
+      const lower = text.toLowerCase();
+      const detected = [];
+      DETECTION_RULES.forEach(rule => {
+        if (rule.keywords.some(k => lower.includes(k))) {
+          rule.apply();
+          detected.push(rule.label);
+        }
+      });
+      return detected;
+    }
+
+    function showDetectionResult(detected, filename) {
+      const box = document.getElementById('detection-result');
+      box.hidden = false;
+      if (!detected.length) {
+        box.innerHTML = '<strong>No se detectaron patrones conocidos en el archivo.</strong>';
+        return;
+      }
+      box.innerHTML =
+        `<strong>Detectamos en &ldquo;${filename}&rdquo;:</strong>` +
+        `<ul style="margin:6px 0 0;padding-left:20px">${detected.map(d => `<li>${d}</li>`).join('')}</ul>` +
+        `<p style="margin:8px 0 0;font-size:0.8rem;opacity:0.75">Todo lo pre-marcado se puede cambiar manualmente.</p>`;
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      uploadedFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const detected = analyzeFile(e.target.result);
+        recalculate();
+        showDetectionResult(detected, file.name);
+      };
+      reader.readAsText(file);
+    }
+
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput  = document.getElementById('file-input');
+
+    uploadZone.addEventListener('click',     () => fileInput.click());
+    uploadZone.addEventListener('dragover',  e  => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('drag-over');
+      handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+    // ─── Generación de resumen ────────────────────────────────────
+    function generateSummary() {
+      const sep   = '─'.repeat(44);
+      const lines = [];
+
+      lines.push('ESTIMACIÓN DE COSTOS — RESILITY.IO');
+      lines.push('Generado: ' + new Date().toLocaleDateString('es-CL'));
+      if (uploadedFileName) lines.push('Archivo analizado: ' + uploadedFileName);
+      lines.push('');
+      lines.push(sep);
+      lines.push('');
+
+      let grandHrs = 0;
+
+      function lbl(id) {
+        const el = document.querySelector(`label[for="${id}"]`);
+        return el ? el.textContent.trim() : id;
+      }
+      function fmtH(h) { return h + (h === 1 ? ' hr' : ' hrs'); }
+
+      function addSection(title, selCb, selFree, selQty) {
+        let hrs = 0;
+        const sLines = [];
+        if (selCb) document.querySelectorAll(selCb).forEach(cb => {
+          if (cb.checked) {
+            const h = parseFloat(cb.dataset.hrs);
+            hrs += h; sLines.push(`  - ${lbl(cb.id)}: ${fmtH(h)}`);
+          }
+        });
+        if (selFree) document.querySelectorAll(selFree).forEach(inp => {
+          const h = parseFloat(inp.value) || 0;
+          if (h > 0) { hrs += h; sLines.push(`  - ${lbl(inp.id)}: ${fmtH(h)}`); }
+        });
+        if (selQty) document.querySelectorAll(selQty).forEach(inp => {
+          const qty  = parseFloat(inp.value) || 0;
+          const rate = parseFloat(inp.dataset.rate) || 0;
+          const h = qty * rate;
+          if (h > 0) { hrs += h; sLines.push(`  - ${lbl(inp.id)}: ${fmtH(h)} (${qty} × ${fmtH(rate)})`); }
+        });
+        if (!sLines.length) return 0;
+        lines.push(title);
+        lines.push(...sLines);
+        lines.push(`  Subtotal: ${fmtH(hrs)}`);
+        lines.push('');
+        return hrs;
+      }
+
+      grandHrs += addSection('SECCIÓN 1 — CANALES',
+        '#s1 input[type="checkbox"][data-hrs]', null, null);
+      grandHrs += addSection('SECCIÓN 2 — INTEGRACIONES / APIs',
+        '#s2 input[type="checkbox"][data-hrs]', null, null);
+      grandHrs += addSection('SECCIÓN 3 — ENTRENAMIENTO DEL AGENTE',
+        null, '#s3 input[data-type="free"]', '#s3 input[data-type="qty"]');
+
+      if (document.getElementById('toggle-s4').checked) {
+        grandHrs += addSection('SECCIÓN 4 — DATOS Y ANALYTICS',
+          '#s4-body input[type="checkbox"][data-hrs]', null, '#s4-body input[data-type="qty"]');
+      }
+
+      grandHrs += addSection('SECCIÓN 5 — TAREAS FIJAS',
+        '#s5 input[type="checkbox"][data-hrs]', null, '#s5 input[data-type="qty"]');
+
+      lines.push(sep);
+      lines.push(`Total horas: ${fmtH(grandHrs)}`);
+      lines.push(`Total desarrollo: ${formatCLP(Math.round(grandHrs * HRS_RATE))}  (${fmtH(grandHrs)} × $${HRS_RATE.toLocaleString('es-CL')}/hr)`);
+      lines.push('');
+
+      let infraA = 0, infraB = 0;
+      const s6aLines = [], s6bLines = [];
+
+      document.querySelectorAll('#s6a input[type="checkbox"][data-clp]').forEach(cb => {
+        if (!cb.checked) return;
+        const v = parseFloat(cb.dataset.clp) || 0;
+        infraA += v;
+        s6aLines.push(`  - ${lbl(cb.id)}: ${formatCLP(v)}/mes`);
+      });
+      document.querySelectorAll('#s6b input[type="checkbox"][data-clp]').forEach(cb => {
+        if (!cb.checked) return;
+        infraB += parseFloat(cb.dataset.clp) || 0;
+        const badge = cb.closest('.item')?.querySelector('.item-clp-client')?.textContent?.trim() ?? '';
+        s6bLines.push(`  - ${lbl(cb.id)}: ${badge}`);
+      });
+
+      lines.push('INFRAESTRUCTURA MENSUAL');
+      lines.push(`Bloque A — Resility: ${formatCLP(infraA)}/mes`);
+      s6aLines.forEach(l => lines.push(l));
+      lines.push(`Bloque B — Cliente: ${formatCLP(infraB)}/mes`);
+      s6bLines.forEach(l => lines.push(l));
+      lines.push('');
+      lines.push(sep);
+      lines.push('');
+      lines.push('*** Precio al cliente: a definir por Walter y Patricio ***');
+
+      return lines.join('\n');
+    }
+
+    document.getElementById('btn-summary').addEventListener('click', () => {
+      const text = generateSummary();
+      const out  = document.getElementById('summary-output');
+      out.value  = text;
+      out.hidden = false;
+      out.rows   = Math.min(40, text.split('\n').length + 2);
+      navigator.clipboard.writeText(text).catch(() => { out.select(); document.execCommand('copy'); });
+      const btn = document.getElementById('btn-summary');
+      btn.textContent = '✓ Copiado al portapapeles';
+      setTimeout(() => { btn.textContent = 'Generar resumen'; }, 2500);
+    });
+
+    // ─── Event listeners ──────────────────────────────────────────
     document.querySelectorAll('input[type="checkbox"][data-hrs]')
       .forEach(cb => cb.addEventListener('change', recalculate));
 
@@ -743,13 +1022,12 @@
     document.querySelectorAll('input[data-type="free"], input[data-type="qty"]')
       .forEach(inp => inp.addEventListener('input', recalculate));
 
-    const toggleS4 = document.getElementById('toggle-s4');
-    toggleS4.addEventListener('change', function () {
+    document.getElementById('toggle-s4').addEventListener('change', function () {
       document.getElementById('s4-body').hidden = !this.checked;
       recalculate();
     });
 
-    recalculate(); // inicializar con valores sugeridos de sección 3
+    recalculate();
   </script>
 
 </body>
