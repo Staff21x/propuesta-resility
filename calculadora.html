@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estimador de costos — Resility.io</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f9;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #1a1a2e;
+      color: #ffffff;
+      padding: 24px 32px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .section {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      margin-bottom: 24px;
+    }
+
+    .section h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #5a5a8a;
+      margin-bottom: 20px;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f5;
+    }
+
+    .item:last-child { border-bottom: none; }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .item-left input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #4a6cf7;
+      cursor: pointer;
+    }
+
+    .item-label {
+      font-size: 1rem;
+      color: #1a1a2e;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .item-hrs {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4a6cf7;
+      background: #eef1fd;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .total-panel {
+      background: #1a1a2e;
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .total-panel .total-label {
+      font-size: 0.95rem;
+      color: #a0a0c0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .total-panel .total-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Estimador de costos — Resility.io</h1>
+  </header>
+
+  <main>
+    <div class="section">
+      <h2>Sección 1 — Canales</h2>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="ch-whatsapp" data-hrs="0.5" />
+          <label class="item-label" for="ch-whatsapp">WhatsApp Business</label>
+        </div>
+        <span class="item-hrs">0.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="ch-email" data-hrs="1" />
+          <label class="item-label" for="ch-email">Email</label>
+        </div>
+        <span class="item-hrs">1 hr</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="ch-voz" data-hrs="1.5" />
+          <label class="item-label" for="ch-voz">Voz/llamadas</label>
+        </div>
+        <span class="item-hrs">1.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="ch-chat" data-hrs="1" />
+          <label class="item-label" for="ch-chat">Chat web</label>
+        </div>
+        <span class="item-hrs">1 hr</span>
+      </div>
+    </div>
+
+    <div class="total-panel">
+      <span class="total-label">Total</span>
+      <span class="total-value" id="total-display">0 hrs / $0 CLP</span>
+    </div>
+  </main>
+
+  <script>
+    const HRS_RATE = 50000; // CLP por hora (ajustable)
+
+    function formatCLP(n) {
+      return '$' + n.toLocaleString('es-CL') + ' CLP';
+    }
+
+    function recalculate() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"][data-hrs]');
+      let totalHrs = 0;
+      checkboxes.forEach(cb => {
+        if (cb.checked) totalHrs += parseFloat(cb.dataset.hrs);
+      });
+      const totalCLP = totalHrs * HRS_RATE;
+      const hrsLabel = totalHrs === 1 ? '1 hr' : totalHrs + ' hrs';
+      document.getElementById('total-display').textContent =
+        hrsLabel + ' / ' + formatCLP(totalCLP);
+    }
+
+    document.querySelectorAll('input[type="checkbox"][data-hrs]')
+      .forEach(cb => cb.addEventListener('change', recalculate));
+  </script>
+
+</body>
+</html>
