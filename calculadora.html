@@ -95,6 +95,43 @@
       border-radius: 20px;
     }
 
+    .item-block {
+      border-bottom: 1px solid #f0f0f5;
+    }
+
+    .item-block:last-child { border-bottom: none; }
+
+    .item-block .item {
+      border-bottom: none;
+    }
+
+    .item-note {
+      font-size: 0.8rem;
+      color: #6b6b9a;
+      padding: 0 0 10px 76px;
+      line-height: 1.4;
+    }
+
+    .item-number {
+      width: 62px;
+      padding: 5px 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      background: #f4f6f9;
+      border: 1.5px solid #d0d4e8;
+      border-radius: 8px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .item-number:focus {
+      border-color: #4a6cf7;
+      background: #ffffff;
+    }
+
     .total-panel {
       background: #1a1a2e;
       color: #ffffff;
@@ -247,6 +284,63 @@
       </div>
     </div>
 
+    <div class="section">
+      <h2>Sección 3 — Entrenamiento del agente</h2>
+      <p class="section-note">Acá vive la complejidad real. Cada prompt es prueba y error. No subestimar estas horas.</p>
+
+      <div class="item-block">
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="train-prompt" data-type="free" min="0" step="0.5" value="3" />
+            <label class="item-label" for="train-prompt">Prompt de sistema (identidad, rol, límites)</label>
+          </div>
+          <span class="item-hrs">hrs</span>
+        </div>
+      </div>
+
+      <div class="item-block">
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="train-contexto" data-type="free" min="0" step="0.5" value="4" />
+            <label class="item-label" for="train-contexto">Contexto del ecosistema del cliente</label>
+          </div>
+          <span class="item-hrs">hrs</span>
+        </div>
+        <p class="item-note">Consume tokens durante la construcción.</p>
+      </div>
+
+      <div class="item-block">
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="train-casos" data-type="qty" data-rate="1" min="0" step="1" value="3" />
+            <label class="item-label" for="train-casos">Casos de uso principales</label>
+          </div>
+          <span class="item-hrs">× 1 hr c/u</span>
+        </div>
+      </div>
+
+      <div class="item-block">
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="train-edge" data-type="qty" data-rate="0.5" min="0" step="1" value="5" />
+            <label class="item-label" for="train-edge">Edge cases y respuestas difíciles</label>
+          </div>
+          <span class="item-hrs">× 0.5 hrs c/u</span>
+        </div>
+      </div>
+
+      <div class="item-block">
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="train-rondas" data-type="qty" data-rate="3" min="0" step="1" value="2" />
+            <label class="item-label" for="train-rondas">Rondas de refinamiento post-pruebas</label>
+          </div>
+          <span class="item-hrs">× 3 hrs c/u</span>
+        </div>
+        <p class="item-note">Una ronda = pruebas completas + correcciones + re-prueba.</p>
+      </div>
+    </div>
+
     <div class="total-panel">
       <span class="total-label">Total</span>
       <span class="total-value" id="total-display">0 hrs / $0 CLP</span>
@@ -261,12 +355,26 @@
     }
 
     function recalculate() {
-      const checkboxes = document.querySelectorAll('input[type="checkbox"][data-hrs]');
       let totalHrs = 0;
-      checkboxes.forEach(cb => {
+
+      // Secciones 1 y 2: checkboxes
+      document.querySelectorAll('input[type="checkbox"][data-hrs]').forEach(cb => {
         if (cb.checked) totalHrs += parseFloat(cb.dataset.hrs);
       });
-      const totalCLP = totalHrs * HRS_RATE;
+
+      // Sección 3: horas libres (valor directo)
+      document.querySelectorAll('input[data-type="free"]').forEach(inp => {
+        totalHrs += parseFloat(inp.value) || 0;
+      });
+
+      // Sección 3: cantidad × tarifa fija
+      document.querySelectorAll('input[data-type="qty"]').forEach(inp => {
+        const qty = parseFloat(inp.value) || 0;
+        const rate = parseFloat(inp.dataset.rate) || 0;
+        totalHrs += qty * rate;
+      });
+
+      const totalCLP = Math.round(totalHrs * HRS_RATE);
       const hrsLabel = totalHrs === 1 ? '1 hr' : totalHrs + ' hrs';
       document.getElementById('total-display').textContent =
         hrsLabel + ' / ' + formatCLP(totalCLP);
@@ -274,6 +382,11 @@
 
     document.querySelectorAll('input[type="checkbox"][data-hrs]')
       .forEach(cb => cb.addEventListener('change', recalculate));
+
+    document.querySelectorAll('input[data-type="free"], input[data-type="qty"]')
+      .forEach(inp => inp.addEventListener('input', recalculate));
+
+    recalculate(); // inicializar con valores sugeridos de sección 3
   </script>
 
 </body>
