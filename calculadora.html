@@ -79,6 +79,13 @@
       user-select: none;
     }
 
+    .section-note {
+      font-size: 0.875rem;
+      color: #6b6b9a;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
     .item-hrs {
       font-size: 0.9rem;
       font-weight: 600;
@@ -155,6 +162,91 @@
       </div>
     </div>
 
+    <div class="section">
+      <h2>Sección 2 — Integraciones / APIs</h2>
+      <p class="section-note">Conexión de API solamente — autenticación, endpoint, prueba. Las APIs del ecosistema del cliente las gestiona el cliente.</p>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-openai" data-hrs="0.25" />
+          <label class="item-label" for="int-openai">OpenAI / Claude API</label>
+        </div>
+        <span class="item-hrs">0.25 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-meta" data-hrs="0.5" />
+          <label class="item-label" for="int-meta">Meta WhatsApp Business API</label>
+        </div>
+        <span class="item-hrs">0.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-crm" data-hrs="1" />
+          <label class="item-label" for="int-crm">CRM (HubSpot / Zoho / Salesforce)</label>
+        </div>
+        <span class="item-hrs">1 hr</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-calendar" data-hrs="0.5" />
+          <label class="item-label" for="int-calendar">Google Calendar / Outlook</label>
+        </div>
+        <span class="item-hrs">0.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-sheets" data-hrs="0.5" />
+          <label class="item-label" for="int-sheets">Google Sheets / Drive</label>
+        </div>
+        <span class="item-hrs">0.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-db" data-hrs="1.5" />
+          <label class="item-label" for="int-db">Base de datos externa del cliente</label>
+        </div>
+        <span class="item-hrs">1.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-erp" data-hrs="1.5" />
+          <label class="item-label" for="int-erp">ERP (SAP, Odoo u otro)</label>
+        </div>
+        <span class="item-hrs">1.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-api-custom" data-hrs="2" />
+          <label class="item-label" for="int-api-custom">API custom del cliente</label>
+        </div>
+        <span class="item-hrs">2 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-twilio" data-hrs="0.5" />
+          <label class="item-label" for="int-twilio">Twilio</label>
+        </div>
+        <span class="item-hrs">0.5 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="checkbox" id="int-elevenlabs" data-hrs="0.5" />
+          <label class="item-label" for="int-elevenlabs">ElevenLabs</label>
+        </div>
+        <span class="item-hrs">0.5 hrs</span>
+      </div>
+    </div>
+
     <div class="total-panel">
       <span class="total-label">Total</span>
       <span class="total-value" id="total-display">0 hrs / $0 CLP</span>
@@ -162,7 +254,7 @@
   </main>
 
   <script>
-    const HRS_RATE = 50000; // CLP por hora (ajustable)
+    const HRS_RATE = 1600; // CLP por hora
 
     function formatCLP(n) {
       return '$' + n.toLocaleString('es-CL') + ' CLP';
