@@ -188,14 +188,62 @@
       color: #7a7a9a;
     }
 
+    .block-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4a6cf7;
+      margin-bottom: 12px;
+    }
+
+    .block-b {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px dashed #e8e8f4;
+    }
+
+    .block-b .block-label {
+      color: #7a7ab8;
+    }
+
+    .block-note {
+      font-size: 0.85rem;
+      color: #6b6b9a;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .item-clp-client {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #6b6b9a;
+      background: #f0f0f8;
+      padding: 4px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
     .total-panel {
       background: #1a1a2e;
       color: #ffffff;
       border-radius: 12px;
-      padding: 24px 32px;
+      padding: 20px 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .total-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .total-sep {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 4px 0;
     }
 
     .total-panel .total-label {
@@ -209,6 +257,17 @@
       font-size: 1.4rem;
       font-weight: 700;
       color: #ffffff;
+    }
+
+    .total-sublabel {
+      font-size: 0.85rem;
+      color: #a0a0c0;
+    }
+
+    .total-subvalue {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #c0c8e8;
     }
   </style>
 </head>
@@ -502,9 +561,114 @@
       </div>
     </div>
 
+    <div class="section">
+      <h2>Sección 6 — Infraestructura mensual</h2>
+      <p class="section-note">Estos costos van aparte. No se suman al costo de desarrollo.</p>
+
+      <div id="s6a">
+        <p class="block-label">Bloque A — La paga Resility</p>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="infra-tokens" data-clp="72000" />
+            <label class="item-label" for="infra-tokens">Claude / OpenAI tokens producción</label>
+          </div>
+          <span class="item-hrs">$72.000 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="infra-railway" data-clp="13500" />
+            <label class="item-label" for="infra-railway">Railway servidor</label>
+          </div>
+          <span class="item-hrs">$13.500 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="infra-supabase" data-clp="22500" />
+            <label class="item-label" for="infra-supabase">Supabase base de datos</label>
+          </div>
+          <span class="item-hrs">$22.500 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="infra-n8n" data-clp="18000" />
+            <label class="item-label" for="infra-n8n">n8n automatizaciones</label>
+          </div>
+          <span class="item-hrs">$18.000 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="infra-elevenlabs" data-clp="19800" />
+            <label class="item-label" for="infra-elevenlabs">ElevenLabs TTS</label>
+          </div>
+          <span class="item-hrs">$19.800 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="infra-cloudflare" data-clp="4500" />
+            <label class="item-label" for="infra-cloudflare">Cloudflare / dominio</label>
+          </div>
+          <span class="item-hrs">$4.500 CLP/mes</span>
+        </div>
+      </div>
+
+      <div id="s6b" class="block-b">
+        <p class="block-label">Bloque B — La paga el cliente directamente</p>
+        <p class="block-note">Estos los contrata y paga el cliente. Se informan para que entienda el costo total de operación.</p>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="cli-whatsapp" data-clp="27000" />
+            <label class="item-label" for="cli-whatsapp">WhatsApp Business API (Meta)</label>
+          </div>
+          <span class="item-clp-client">~$27.000 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="cli-twilio" data-clp="36000" />
+            <label class="item-label" for="cli-twilio">Twilio voz</label>
+          </div>
+          <span class="item-clp-client">~$36.000 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="cli-crm" data-clp="45000" />
+            <label class="item-label" for="cli-crm">CRM externo</label>
+          </div>
+          <span class="item-clp-client">~$45.000 CLP/mes</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="cli-db" data-clp="0" />
+            <label class="item-label" for="cli-db">Base de datos / repositorio del cliente</label>
+          </div>
+          <span class="item-clp-client">costo propio</span>
+        </div>
+      </div>
+    </div>
+
     <div class="total-panel">
-      <span class="total-label">Total</span>
-      <span class="total-value" id="total-display">0 hrs / $0 CLP</span>
+      <div class="total-row">
+        <span class="total-label">Desarrollo</span>
+        <span class="total-value" id="total-display">0 hrs / $0 CLP</span>
+      </div>
+      <hr class="total-sep" />
+      <div class="total-row">
+        <span class="total-sublabel">Infra mensual — Resility</span>
+        <span class="total-subvalue" id="infra-a-display">$0 CLP/mes</span>
+      </div>
+      <div class="total-row">
+        <span class="total-sublabel">Infra mensual — Cliente</span>
+        <span class="total-subvalue" id="infra-b-display">$0 CLP/mes</span>
+      </div>
     </div>
   </main>
 
@@ -517,6 +681,8 @@
 
     function recalculate() {
       let totalHrs = 0;
+      let infraA = 0;
+      let infraB = 0;
       const s4Active = document.getElementById('toggle-s4').checked;
 
       // Secciones 1 y 2: checkboxes (excluir S4)
@@ -550,13 +716,28 @@
         });
       }
 
+      // Sección 6A: subtotal infraestructura Resility (no suma a horas)
+      document.querySelectorAll('#s6a input[type="checkbox"][data-clp]').forEach(cb => {
+        if (cb.checked) infraA += parseFloat(cb.dataset.clp) || 0;
+      });
+
+      // Sección 6B: subtotal infraestructura cliente (no suma a horas)
+      document.querySelectorAll('#s6b input[type="checkbox"][data-clp]').forEach(cb => {
+        if (cb.checked) infraB += parseFloat(cb.dataset.clp) || 0;
+      });
+
       const totalCLP = Math.round(totalHrs * HRS_RATE);
       const hrsLabel = totalHrs === 1 ? '1 hr' : totalHrs + ' hrs';
       document.getElementById('total-display').textContent =
         hrsLabel + ' / ' + formatCLP(totalCLP);
+      document.getElementById('infra-a-display').textContent = formatCLP(infraA) + '/mes';
+      document.getElementById('infra-b-display').textContent = formatCLP(infraB) + '/mes';
     }
 
     document.querySelectorAll('input[type="checkbox"][data-hrs]')
+      .forEach(cb => cb.addEventListener('change', recalculate));
+
+    document.querySelectorAll('input[type="checkbox"][data-clp]')
       .forEach(cb => cb.addEventListener('change', recalculate));
 
     document.querySelectorAll('input[data-type="free"], input[data-type="qty"]')
