@@ -132,6 +132,53 @@
       background: #ffffff;
     }
 
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 { margin-bottom: 0; }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input { display: none; }
+
+    .toggle-track {
+      width: 44px;
+      height: 24px;
+      background: #d0d4e8;
+      border-radius: 12px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch input:checked + .toggle-track {
+      background: #4a6cf7;
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #ffffff;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: left 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .toggle-switch input:checked + .toggle-track .toggle-thumb {
+      left: 23px;
+    }
+
     .total-panel {
       background: #1a1a2e;
       color: #ffffff;
@@ -341,6 +388,58 @@
       </div>
     </div>
 
+    <div class="section">
+      <div class="section-header">
+        <h2>Sección 4 — Datos y analytics</h2>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-s4" />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        </label>
+      </div>
+
+      <div id="s4-body" hidden>
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="s4-fuentes" data-type="qty" data-rate="4" min="0" step="1" value="1" />
+            <label class="item-label" for="s4-fuentes">Conexión y normalización de fuentes de datos</label>
+          </div>
+          <span class="item-hrs">× 4 hrs c/u</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="s4-kpis" data-type="qty" data-rate="1" min="0" step="1" value="4" />
+            <label class="item-label" for="s4-kpis">KPIs y métricas calculadas</label>
+          </div>
+          <span class="item-hrs">× 1 hr c/u</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="number" class="item-number" id="s4-dashboards" data-type="qty" data-rate="4" min="0" step="1" value="2" />
+            <label class="item-label" for="s4-dashboards">Paneles / dashboards</label>
+          </div>
+          <span class="item-hrs">× 4 hrs c/u</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="s4-alertas" data-hrs="3" />
+            <label class="item-label" for="s4-alertas">Sistema de alertas automáticas</label>
+          </div>
+          <span class="item-hrs">3 hrs</span>
+        </div>
+
+        <div class="item">
+          <div class="item-left">
+            <input type="checkbox" id="s4-export" data-hrs="1.5" />
+            <label class="item-label" for="s4-export">Exportación de reportes Excel/CSV</label>
+          </div>
+          <span class="item-hrs">1.5 hrs</span>
+        </div>
+      </div>
+    </div>
+
     <div class="total-panel">
       <span class="total-label">Total</span>
       <span class="total-value" id="total-display">0 hrs / $0 CLP</span>
@@ -356,9 +455,11 @@
 
     function recalculate() {
       let totalHrs = 0;
+      const s4Active = document.getElementById('toggle-s4').checked;
 
-      // Secciones 1 y 2: checkboxes
+      // Secciones 1 y 2: checkboxes (excluir S4)
       document.querySelectorAll('input[type="checkbox"][data-hrs]').forEach(cb => {
+        if (cb.closest('#s4-body')) return;
         if (cb.checked) totalHrs += parseFloat(cb.dataset.hrs);
       });
 
@@ -367,12 +468,25 @@
         totalHrs += parseFloat(inp.value) || 0;
       });
 
-      // Sección 3: cantidad × tarifa fija
+      // Sección 3: cantidad × tarifa fija (excluir S4)
       document.querySelectorAll('input[data-type="qty"]').forEach(inp => {
+        if (inp.closest('#s4-body')) return;
         const qty = parseFloat(inp.value) || 0;
         const rate = parseFloat(inp.dataset.rate) || 0;
         totalHrs += qty * rate;
       });
+
+      // Sección 4: solo si el toggle está activado
+      if (s4Active) {
+        document.querySelectorAll('#s4-body input[type="checkbox"][data-hrs]').forEach(cb => {
+          if (cb.checked) totalHrs += parseFloat(cb.dataset.hrs);
+        });
+        document.querySelectorAll('#s4-body input[data-type="qty"]').forEach(inp => {
+          const qty = parseFloat(inp.value) || 0;
+          const rate = parseFloat(inp.dataset.rate) || 0;
+          totalHrs += qty * rate;
+        });
+      }
 
       const totalCLP = Math.round(totalHrs * HRS_RATE);
       const hrsLabel = totalHrs === 1 ? '1 hr' : totalHrs + ' hrs';
@@ -385,6 +499,12 @@
 
     document.querySelectorAll('input[data-type="free"], input[data-type="qty"]')
       .forEach(inp => inp.addEventListener('input', recalculate));
+
+    const toggleS4 = document.getElementById('toggle-s4');
+    toggleS4.addEventListener('change', function () {
+      document.getElementById('s4-body').hidden = !this.checked;
+      recalculate();
+    });
 
     recalculate(); // inicializar con valores sugeridos de sección 3
   </script>
