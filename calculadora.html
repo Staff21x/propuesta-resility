@@ -179,6 +179,15 @@
       left: 23px;
     }
 
+    .item-fixed input[type="checkbox"]:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .item-fixed .item-label {
+      color: #7a7a9a;
+    }
+
     .total-panel {
       background: #1a1a2e;
       color: #ffffff;
@@ -437,6 +446,59 @@
           </div>
           <span class="item-hrs">1.5 hrs</span>
         </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Sección 5 — Tareas fijas</h2>
+      <p class="section-note">Siempre van incluidas en todo proyecto. No se pueden quitar.</p>
+
+      <div class="item item-fixed">
+        <div class="item-left">
+          <input type="checkbox" id="fix-arq" data-hrs="3" checked disabled />
+          <label class="item-label" for="fix-arq">Diseño de arquitectura técnica</label>
+        </div>
+        <span class="item-hrs">3 hrs</span>
+      </div>
+
+      <div class="item item-fixed">
+        <div class="item-left">
+          <input type="checkbox" id="fix-deploy" data-hrs="2" checked disabled />
+          <label class="item-label" for="fix-deploy">Despliegue en producción (Railway, variables de entorno, dominio)</label>
+        </div>
+        <span class="item-hrs">2 hrs</span>
+      </div>
+
+      <div class="item item-fixed">
+        <div class="item-left">
+          <input type="checkbox" id="fix-errors" data-hrs="3" checked disabled />
+          <label class="item-label" for="fix-errors">Control de errores y casos límite técnicos</label>
+        </div>
+        <span class="item-hrs">3 hrs</span>
+      </div>
+
+      <div class="item item-fixed">
+        <div class="item-left">
+          <input type="checkbox" id="fix-docs" data-hrs="2" checked disabled />
+          <label class="item-label" for="fix-docs">Documentación interna del desarrollo</label>
+        </div>
+        <span class="item-hrs">2 hrs</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="number" class="item-number" id="s5-testing" data-type="qty" data-rate="1.5" min="0" step="1" value="3" />
+          <label class="item-label" for="s5-testing">Testing</label>
+        </div>
+        <span class="item-hrs">× 1.5 hrs c/u</span>
+      </div>
+
+      <div class="item">
+        <div class="item-left">
+          <input type="number" class="item-number" id="s5-capacitacion" data-type="qty" data-rate="1.5" min="0" step="1" value="1" />
+          <label class="item-label" for="s5-capacitacion">Capacitación al cliente</label>
+        </div>
+        <span class="item-hrs">× 1.5 hrs c/u</span>
       </div>
     </div>
 
